@@ -350,10 +350,10 @@ button { cursor: pointer; }
     <h2 id="gh-title">Modifier la liste</h2>
     <p class="sheet-intro">Colle ton jeton GitHub pour cocher les visionnages, changer les dates et ajouter des titres. Il reste enregistré dans ce navigateur, nulle part ailleurs.</p>
     <ol class="steps">
-      <li>Ouvre <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">la page de création de jeton</a>, connecté à ton compte GitHub.</li>
-      <li>Donne-lui un nom (par exemple <b>Watchparty</b>) et choisis une date d'expiration.</li>
+      <li>Ouvre <a href="https://github.com/settings/personal-access-tokens/new?name=Watchparty&amp;description=Cocher%20les%20films%20sur%20la%20Watchparty&amp;contents=write" target="_blank" rel="noopener">la page de création de jeton</a>, connecté à ton compte GitHub. Le nom et la permission <b>Contents</b> sont déjà remplis.</li>
+      <li>Choisis une date d'expiration.</li>
       <li><b>Repository access</b> : « Only select repositories », puis <b id="gh-repo-name">football-marquager-26</b>.</li>
-      <li><b>Permissions</b> → Repository permissions → <b>Contents</b> : « Read and write ».</li>
+      <li>Dans <b>Permissions</b>, vérifie que <b>Contents</b> apparaît avec « Read and write ». Sinon : <b>Add permissions</b>, tape « Contents », coche-le, puis choisis « Read and write » à côté.</li>
       <li>Clique sur <b>Generate token</b>, copie le jeton et colle-le ci-dessous.</li>
     </ol>
     <div class="field">
