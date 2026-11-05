@@ -1,0 +1,37 @@
+{
+  "exportedAt": "2026-11-05",
+  "tabs": [
+    {"id": "films-du-mois", "name": "Films du Mois", "kicker": "Le rendez-vous mensuel", "description": "Un film choisi pour le mois, regardé ensemble.", "accent": "#e8b04a", "order": 1, "sections": []},
+    {"id": "dcu", "name": "DCU", "kicker": "DC Studios", "description": "Dans l'ordre de sortie, de Peacemaker à Lanterns.", "accent": "#5b8def", "order": 2, "sections": []},
+    {"id": "the-batman", "name": "The Batman", "kicker": "The Batman Epic Crime Saga", "description": "Le Gotham de Matt Reeves, à part du DCU. La suite, The Batman Part II, est prévue en salles le 18 février 2028.", "accent": "#c9a227", "order": 3, "sections": []},
+    {"id": "marvel-hors-mcu", "name": "Marvel hors MCU", "kicker": "Le chantier Doomsday", "description": "Les films Marvel d'avant le MCU, à rattraper avant les grands crossovers.", "accent": "#e5484d", "order": 4, "sections": [{"id": "avant-deadpool-wolverine", "name": "Avant Deadpool & Wolverine"}, {"id": "avant-avengers-doomsday", "name": "Avant Avengers: Doomsday"}]},
+    {"id": "autre", "name": "Autre", "kicker": "En vrac", "description": "Tout ce qui n'a pas encore de groupe.", "accent": "#a59ac2", "order": 5, "sections": []}
+  ],
+  "items": [
+    {"id": "a-touch-of-sin", "title": "A Touch of Sin", "kind": "film", "year": 2013, "by": "Jia Zhangke", "tab": "films-du-mois", "section": null, "note": "Film de juin, juillet & août 2026", "order": 10, "seen": true, "seenAt": "2026-08-24"},
+    {"id": "zodiac", "title": "Zodiac", "kind": "film", "year": 2007, "by": "David Fincher", "tab": "films-du-mois", "section": null, "note": "Film de septembre 2026", "order": 20, "seen": true, "seenAt": "2026-09-13"},
+    {"id": "fruitvale-station", "title": "Fruitvale Station", "kind": "film", "year": 2013, "by": "Ryan Coogler", "tab": "films-du-mois", "section": null, "note": "Film d'octobre 2026", "order": 30, "seen": false, "seenAt": null},
+
+    {"id": "peacemaker-s1", "title": "Peacemaker — Saison 1", "kind": "serie", "year": 2022, "by": "James Gunn", "tab": "dcu", "section": null, "note": null, "order": 10, "seen": true, "seenAt": "2025-08-18"},
+    {"id": "creature-commandos", "title": "Creature Commandos", "kind": "serie", "year": 2024, "by": "James Gunn", "tab": "dcu", "section": null, "note": null, "order": 20, "seen": true, "seenAt": "2025-08-20"},
+    {"id": "superman-2025", "title": "Superman", "kind": "film", "year": 2025, "by": "James Gunn", "tab": "dcu", "section": null, "note": null, "order": 30, "seen": true, "seenAt": "2025-08-24"},
+    {"id": "peacemaker-s2", "title": "Peacemaker — Saison 2", "kind": "serie", "year": 2025, "by": "James Gunn", "tab": "dcu", "section": null, "note": null, "order": 40, "seen": true, "seenAt": "2025-10-11"},
+    {"id": "supergirl", "title": "Supergirl", "kind": "film", "year": 2026, "by": "Craig Gillespie", "tab": "dcu", "section": null, "note": null, "order": 50, "seen": true, "seenAt": "2026-10-03"},
+    {"id": "lanterns-s1", "title": "Lanterns — Saison 1", "kind": "serie", "year": 2026, "by": "Chris Mundy, Damon Lindelof & Tom King", "tab": "dcu", "section": null, "note": null, "order": 60, "seen": false, "seenAt": null},
+
+    {"id": "the-batman", "title": "The Batman", "kind": "film", "year": 2022, "by": "Matt Reeves", "tab": "the-batman", "section": null, "note": null, "order": 10, "seen": true, "seenAt": "2025-10-25"},
+    {"id": "the-penguin", "title": "The Penguin", "kind": "serie", "year": 2024, "by": "Lauren LeFranc", "tab": "the-batman", "section": null, "note": "Mini-série, suite directe de The Batman", "order": 20, "seen": true, "seenAt": "2026-02-22"},
+
+    {"id": "blade", "title": "Blade", "kind": "film", "year": 1998, "by": "Stephen Norrington", "tab": "marvel-hors-mcu", "section": "avant-deadpool-wolverine", "note": null, "order": 10, "seen": false, "seenAt": null},
+    {"id": "blade-2", "title": "Blade II", "kind": "film", "year": 2002, "by": "Guillermo del Toro", "tab": "marvel-hors-mcu", "section": "avant-deadpool-wolverine", "note": null, "order": 20, "seen": false, "seenAt": null},
+    {"id": "blade-trinity", "title": "Blade: Trinity", "kind": "film", "year": 2004, "by": "David S. Goyer", "tab": "marvel-hors-mcu", "section": "avant-deadpool-wolverine", "note": null, "order": 30, "seen": false, "seenAt": null},
+    {"id": "4-fantastiques-2005", "title": "Les 4 Fantastiques", "kind": "film", "year": 2005, "by": "Tim Story", "tab": "marvel-hors-mcu", "section": "avant-deadpool-wolverine", "note": null, "order": 40, "seen": true, "seenAt": "2026-09-27"},
+    {"id": "4-fantastiques-surfer", "title": "Les 4 Fantastiques et le Surfer d'Argent", "kind": "film", "year": 2007, "by": "Tim Story", "tab": "marvel-hors-mcu", "section": "avant-deadpool-wolverine", "note": "Rise of the Silver Surfer", "order": 50, "seen": false, "seenAt": null},
+    {"id": "daredevil-2003", "title": "Daredevil", "kind": "film", "year": 2003, "by": "Mark Steven Johnson", "tab": "marvel-hors-mcu", "section": "avant-deadpool-wolverine", "note": null, "order": 60, "seen": false, "seenAt": null},
+    {"id": "elektra", "title": "Elektra", "kind": "film", "year": 2005, "by": "Rob Bowman", "tab": "marvel-hors-mcu", "section": "avant-deadpool-wolverine", "note": null, "order": 70, "seen": false, "seenAt": null},
+    {"id": "hulk-2003", "title": "Hulk", "kind": "film", "year": 2003, "by": "Ang Lee", "tab": "marvel-hors-mcu", "section": "avant-avengers-doomsday", "note": null, "order": 80, "seen": false, "seenAt": null},
+    {"id": "punisher-2004", "title": "The Punisher", "kind": "film", "year": 2004, "by": "Jonathan Hensleigh", "tab": "marvel-hors-mcu", "section": "avant-avengers-doomsday", "note": null, "order": 90, "seen": false, "seenAt": null},
+    {"id": "punisher-war-zone", "title": "Punisher: War Zone", "kind": "film", "year": 2008, "by": "Lexi Alexander", "tab": "marvel-hors-mcu", "section": "avant-avengers-doomsday", "note": null, "order": 100, "seen": false, "seenAt": null},
+    {"id": "4-fantastiques-2015", "title": "Les 4 Fantastiques", "kind": "film", "year": 2015, "by": "Josh Trank", "tab": "marvel-hors-mcu", "section": "avant-avengers-doomsday", "note": null, "order": 110, "seen": false, "seenAt": null}
+  ]
+}

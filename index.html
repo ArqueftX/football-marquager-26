@@ -1,537 +1,883 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Football MARQnager 26</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Watchparty Finito</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Salle obscure : un seul thème sombre. Chaque titre est un ticket de cinéma, chaque onglet a sa couleur. */
+:root {
+  --bg: #121016;
+  --surface: #1c1922;
+  --surface-2: #25212c;
+  --ink: #f1ebe1;
+  --muted: #9b93a5;
+  --line: #34303d;
+  --seen: #7fd1a4;
+  --danger: #f07a6e;
+  --finito: #b7cb00; /* jaune du logo Finito FC */
+  --display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--acc, var(--ink)); outline-offset: 2px; }
 
-    :root {
-      --green: #00e87a;
-      --green-dim: #00b85f;
-      --bg: #080e0b;
-      --bg2: #0d1a12;
-      --bg3: #132018;
-      --card: #111c16;
-      --border: #1f3028;
-      --text: #e8f5ee;
-      --muted: #6b8f78;
-      --accent: #00e87a;
-    }
+.wrap { max-width: 860px; margin: 0 auto; padding: 28px 20px 64px; display: grid; gap: 22px; }
 
-    html, body { height: 100%; }
+/* En-tête */
+.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.brand { display: grid; gap: 4px; }
+.brand h1 {
+  font-family: var(--display); font-weight: 900; font-size: clamp(44px, 9vw, 72px);
+  line-height: .9; letter-spacing: .01em; margin: 0; text-transform: uppercase;
+}
+.brand h1 span { color: var(--finito); }
+.brand p { margin: 0; color: var(--muted); font-size: 14px; }
+.tally { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tally b { color: var(--ink); font-weight: 500; }
+.btn-add {
+  border: 0; border-radius: 999px; padding: 11px 18px; background: var(--ink); color: var(--bg);
+  font-weight: 600; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+}
+.btn-add:hover { background: #fff; }
+.btn-add svg { width: 14px; height: 14px; }
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+/* Onglets */
+.tabs-scroll { overflow-x: auto; margin: 0 -20px; padding: 0 20px; scrollbar-width: thin; }
+.tabs { display: flex; gap: 8px; min-width: max-content; padding-bottom: 4px; }
+.tab {
+  --acc: var(--muted);
+  border: 1px solid var(--line); background: var(--surface); border-radius: 12px;
+  padding: 10px 14px 12px; display: grid; gap: 6px; text-align: left; min-width: 140px;
+}
+.tab:hover { border-color: color-mix(in oklab, var(--acc) 60%, var(--line)); }
+.tab[aria-selected="true"] { border-color: var(--acc); background: color-mix(in oklab, var(--acc) 14%, var(--surface)); }
+.tab-name { font-family: var(--display); font-weight: 800; font-size: 19px; letter-spacing: .02em; text-transform: uppercase; line-height: 1; }
+.tab-count { font-family: var(--mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { height: 3px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--acc); border-radius: 3px; transition: width .4s ease; }
 
-    /* ——— PITCH TEXTURE ——— */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 48px,
-          rgba(0,232,122,0.025) 48px,
-          rgba(0,232,122,0.025) 96px
-        );
-      pointer-events: none;
-      z-index: 0;
-    }
+/* Panneau d'onglet */
+.panel { display: grid; gap: 22px; --acc: var(--muted); }
+.panel-head { display: grid; gap: 8px; border-left: 4px solid var(--acc); padding: 2px 0 2px 16px; }
+.kicker { font-family: var(--mono); font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--acc); }
+.panel-head h2 { font-family: var(--display); font-weight: 900; font-size: clamp(34px, 6vw, 48px); line-height: .95; margin: 0; text-transform: uppercase; text-wrap: balance; }
+.panel-head p { margin: 0; color: var(--muted); max-width: 62ch; }
+.panel-head .bar { max-width: 320px; height: 4px; margin-top: 4px; }
 
-    /* ——— HEADER ——— */
-    header {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.5rem 2.5rem;
-      border-bottom: 1px solid var(--border);
-      background: rgba(8,14,11,0.9);
-      backdrop-filter: blur(8px);
-    }
+.section { display: grid; gap: 10px; }
+.section-title { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.section-title h3 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 22px; letter-spacing: .02em; text-transform: uppercase; }
+.section-title span { font-family: var(--mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.section-note { margin: -4px 0 2px; color: var(--muted); font-size: 13.5px; }
+.list { display: grid; gap: 10px; }
 
-    .logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2rem;
-      letter-spacing: 0.04em;
-      line-height: 1;
-    }
-    .logo span { color: var(--green); }
+/* Ticket */
+.ticket {
+  position: relative; display: grid; grid-template-columns: 78px 1fr auto; grid-template-areas: "stub body act";
+  background: var(--surface); border-radius: 10px; min-height: 84px;
+}
+.ticket::before, .ticket::after {
+  content: ""; position: absolute; left: 70px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg);
+}
+.ticket::before { top: -8px; }
+.ticket::after { bottom: -8px; }
+.stub {
+  grid-area: stub; border-right: 2px dashed var(--bg); border-radius: 10px 0 0 10px;
+  background: color-mix(in oklab, var(--acc) 16%, var(--surface));
+  display: grid; align-content: center; justify-items: center; gap: 4px; padding: 10px 6px;
+}
+.num { font-family: var(--display); font-weight: 900; font-size: 28px; line-height: 1; color: var(--acc); font-variant-numeric: tabular-nums; }
+.kind { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.body { grid-area: body; padding: 14px 16px; display: grid; gap: 3px; align-content: center; min-width: 0; }
+.body h4 { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+.meta { margin: 0; color: var(--muted); font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.note { margin: 2px 0 0; font-size: 12.5px; color: var(--acc); font-family: var(--mono); letter-spacing: .02em; }
+.flag {
+  justify-self: start; font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--bg); background: var(--acc); padding: 2px 7px; border-radius: 4px; margin-bottom: 3px;
+}
+.act { grid-area: act; display: flex; align-items: center; gap: 6px; padding: 12px 14px 12px 0; }
+.btn-seen {
+  border: 1px solid color-mix(in oklab, var(--acc) 70%, var(--line)); background: transparent; color: var(--ink);
+  border-radius: 999px; padding: 8px 14px; font-size: 13.5px; font-weight: 500; white-space: nowrap;
+}
+.btn-seen:hover { background: color-mix(in oklab, var(--acc) 22%, transparent); }
+.stamp {
+  border: 2px solid var(--seen); color: var(--seen); background: transparent; border-radius: 6px;
+  padding: 4px 10px; transform: rotate(-5deg); font-family: var(--display); font-weight: 900; font-size: 18px;
+  letter-spacing: .08em; text-transform: uppercase; line-height: 1.05; display: grid; justify-items: center;
+}
+.stamp small { font-family: var(--mono); font-weight: 400; font-size: 10px; letter-spacing: .04em; text-transform: none; }
+.stamp:hover { background: color-mix(in oklab, var(--seen) 12%, transparent); }
+.btn-x {
+  border: 0; background: transparent; color: var(--muted); width: 32px; height: 32px; border-radius: 8px;
+  display: grid; place-items: center;
+}
+.btn-x:hover { background: var(--surface-2); color: var(--danger); }
+.btn-x svg { width: 15px; height: 15px; }
+.confirm { display: flex; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); }
+.confirm button { border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px; padding: 6px 11px; font-size: 13px; }
+.confirm .yes { border-color: var(--danger); color: var(--danger); }
 
-    .logo-sub {
-      font-size: 0.65rem;
-      letter-spacing: 0.25em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-top: 2px;
-    }
+.ticket.is-seen .body h4 { color: color-mix(in oklab, var(--ink) 72%, var(--bg)); }
+.ticket.is-seen .stub { background: color-mix(in oklab, var(--acc) 7%, var(--surface)); }
+.ticket.is-seen .num { color: color-mix(in oklab, var(--acc) 55%, var(--surface)); }
+.ticket.is-next { box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--acc) 55%, transparent); }
 
-    /* ——— CAREER NAV ——— */
-    .career-nav {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      gap: 0;
-      padding: 0 2.5rem;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg2);
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .career-nav::-webkit-scrollbar { display: none; }
+.empty, .status {
+  border: 1px dashed var(--line); border-radius: 12px; padding: 22px; color: var(--muted); text-align: left;
+}
+.status { border-style: solid; }
+.status.warn { border-color: color-mix(in oklab, var(--danger) 50%, var(--line)); color: var(--ink); }
 
-    .career-tab {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.9rem 1.4rem;
-      font-size: 0.85rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--muted);
-      cursor: pointer;
-      border: none;
-      background: none;
-      border-bottom: 2px solid transparent;
-      white-space: nowrap;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .career-tab:hover { color: var(--text); }
-    .career-tab.active {
-      color: var(--green);
-      border-bottom-color: var(--green);
-    }
-    .career-tab .badge {
-      font-size: 0.65rem;
-      padding: 1px 6px;
-      border-radius: 20px;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      color: var(--muted);
-    }
-    .career-tab.active .badge {
-      background: rgba(0,232,122,0.12);
-      border-color: rgba(0,232,122,0.3);
-      color: var(--green);
-    }
+/* Fenêtre d'ajout */
+.overlay {
+  position: fixed; inset: 0; background: rgba(8, 7, 10, .72); display: grid; place-items: center; padding: 16px; z-index: 20;
+}
+.overlay[hidden] { display: none; }
+.sheet {
+  width: min(520px, 100%); max-height: calc(100% - 8px); overflow-y: auto; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 16px; padding: 22px; display: grid; gap: 16px;
+}
+.sheet h2 { margin: 0; font-family: var(--display); font-weight: 900; font-size: 30px; text-transform: uppercase; line-height: 1; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: 12.5px; color: var(--muted); font-family: var(--mono); letter-spacing: .04em; }
+.field input, .field select {
+  width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+}
+.field input:focus, .field select:focus { border-color: var(--muted); outline: none; }
+.seg { display: flex; gap: 6px; }
+.seg label {
+  flex: 1; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; text-align: center; cursor: pointer;
+  font-family: var(--body); font-size: 14px; color: var(--ink); letter-spacing: 0;
+}
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg input:checked + span { color: var(--bg); }
+.seg label:has(input:checked) { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.seg label:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: 2px; }
+.sheet-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.btn-ghost { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 10px 16px; }
+.btn-ghost:hover { background: var(--surface-2); }
+.form-error { color: var(--danger); font-size: 13.5px; margin: 0; }
 
-    /* ——— MAIN ——— */
-    main {
-      position: relative;
-      z-index: 5;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2.5rem 2rem 4rem;
-    }
+.toast {
+  position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--bg);
+  padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 500; z-index: 30; max-width: calc(100% - 32px);
+}
+.toast[hidden] { display: none; }
 
-    .career-page { display: none; }
-    .career-page.active { display: block; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-    /* Career header */
-    .career-header {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      margin-bottom: 2rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .career-club {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 3.5rem;
-      line-height: 1;
-      letter-spacing: 0.02em;
-    }
-    .career-club .highlight { color: var(--green); }
-    .career-meta {
-      text-align: right;
-      font-size: 0.8rem;
-      color: var(--muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .career-meta strong {
-      display: block;
-      font-size: 1.4rem;
-      font-family: 'Bebas Neue', sans-serif;
-      letter-spacing: 0.04em;
-      color: var(--text);
-    }
+/* Édition de date */
+.ticket.has-editor { grid-template-areas: "stub body act" "stub edit edit"; }
+.date-edit {
+  grid-area: edit; display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  padding: 0 14px 14px 16px;
+}
+.date-edit .lbl { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.date-edit input[type="date"] {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; color-scheme: dark;
+  font-variant-numeric: tabular-nums;
+}
+.date-edit button { border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px; padding: 6px 12px; font-size: 13px; }
+.date-edit button.save { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
+.date-edit button.unseen { color: var(--danger); border-color: color-mix(in oklab, var(--danger) 45%, var(--line)); }
 
-    /* Season grid */
-    .seasons-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1rem;
-    }
+/* Accueil */
+.home { display: grid; gap: 34px; }
+.home-block { display: grid; gap: 12px; }
+.home-block > header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.home-block h2 { margin: 0; font-family: var(--display); font-weight: 900; font-size: 26px; letter-spacing: .02em; text-transform: uppercase; }
+.home-block header span { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.next-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.next-card {
+  background: var(--surface); border-radius: 10px; border-top: 3px solid var(--acc);
+  padding: 14px 16px; display: grid; gap: 6px; align-content: start;
+}
+.next-card .from { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--acc); background: none; border: 0; padding: 0; text-align: left; }
+.next-card .from:hover { text-decoration: underline; }
+.next-card h3 { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+.next-card .btn-seen { justify-self: start; margin-top: 6px; }
+.next-card.done { border-top-color: var(--seen); }
+.next-card.done p { margin: 0; color: var(--muted); font-size: 13.5px; }
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.cat {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 14px; text-align: left;
+  display: grid; gap: 8px;
+}
+.cat:hover { border-color: var(--acc); }
+.cat .k { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--acc); }
+.cat .n { font-family: var(--display); font-weight: 900; font-size: 24px; text-transform: uppercase; line-height: 1; }
+.cat .c { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cat .c b { color: var(--ink); font-weight: 500; font-size: 18px; }
+.timeline { display: grid; }
+.tl-row {
+  display: grid; grid-template-columns: 86px 1fr auto; grid-template-areas: "date main act"; align-items: center;
+  gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line);
+}
+.tl-row.has-editor { grid-template-areas: "date main act" "edit edit edit"; }
+.tl-row .date-edit { padding: 2px 0 4px 98px; }
+.tl-date { grid-area: date; font-family: var(--mono); font-size: 13.5px; color: var(--seen); font-variant-numeric: tabular-nums; }
+.tl-main { grid-area: main; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; min-width: 0; }
+.tl-main strong { font-weight: 600; overflow-wrap: anywhere; }
+.chip { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--acc); border: 1px solid color-mix(in oklab, var(--acc) 50%, transparent); border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
+.tl-act { grid-area: act; }
+.btn-edit {
+  border: 0; background: transparent; color: var(--muted); border-radius: 8px; padding: 6px 8px; font-size: 13px;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-edit:hover { background: var(--surface-2); color: var(--ink); }
+.btn-edit svg { width: 14px; height: 14px; }
+.tab.tab-home { min-width: 110px; }
 
-    .season-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.4rem 1.2rem;
-      cursor: pointer;
-      transition: border-color 0.2s, transform 0.2s, background 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-    .season-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--green) 0%, transparent 100%);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.25s ease;
-    }
-    .season-card:hover {
-      border-color: rgba(0,232,122,0.4);
-      background: var(--bg3);
-      transform: translateY(-2px);
-    }
-    .season-card:hover::before { transform: scaleX(1); }
-
-    .season-year {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2rem;
-      line-height: 1;
-      color: var(--green);
-      letter-spacing: 0.02em;
-    }
-    .season-label {
-      font-size: 0.7rem;
-      color: var(--muted);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-top: 2px;
-      margin-bottom: 1rem;
-    }
-    .season-desc {
-      font-size: 0.85rem;
-      color: var(--text);
-      line-height: 1.5;
-      opacity: 0.7;
-    }
-    .season-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-top: 1rem;
-    }
-    .tag {
-      font-size: 0.65rem;
-      padding: 2px 8px;
-      border-radius: 20px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-    .tag-promo { background: rgba(0,232,122,0.15); color: var(--green); border: 1px solid rgba(0,232,122,0.3); }
-    .tag-titre { background: rgba(255,200,0,0.12); color: #ffd040; border: 1px solid rgba(255,200,0,0.3); }
-    .tag-releg { background: rgba(220,60,60,0.15); color: #ff7070; border: 1px solid rgba(220,60,60,0.3); }
-    .tag-coupe { background: rgba(100,160,255,0.12); color: #80b4ff; border: 1px solid rgba(100,160,255,0.3); }
-    .tag-neutre { background: rgba(107,143,120,0.15); color: var(--muted); border: 1px solid var(--border); }
-
-    .season-arrow {
-      position: absolute;
-      bottom: 1rem; right: 1rem;
-      font-size: 1.1rem;
-      color: var(--muted);
-      transition: color 0.2s, transform 0.2s;
-    }
-    .season-card:hover .season-arrow {
-      color: var(--green);
-      transform: translate(2px, -2px);
-    }
-
-    /* ——— MODAL ——— */
-    .modal-bg {
-      position: fixed;
-      inset: 0;
-      background: rgba(5,10,7,0.85);
-      backdrop-filter: blur(6px);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-    }
-    .modal-bg.open {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .modal {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      width: 100%;
-      max-width: 520px;
-      padding: 2rem;
-      transform: translateY(16px) scale(0.98);
-      transition: transform 0.25s ease;
-      position: relative;
-    }
-    .modal-bg.open .modal { transform: translateY(0) scale(1); }
-
-    .modal-close {
-      position: absolute;
-      top: 1rem; right: 1rem;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      width: 30px; height: 30px;
-      cursor: pointer;
-      color: var(--muted);
-      font-size: 1.1rem;
-      display: flex; align-items: center; justify-content: center;
-      transition: color 0.2s, background 0.2s;
-    }
-    .modal-close:hover { color: var(--text); background: var(--border); }
-
-    .modal-season {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 3rem;
-      color: var(--green);
-      line-height: 1;
-      letter-spacing: 0.02em;
-    }
-    .modal-club {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: var(--muted);
-      margin-bottom: 1.2rem;
-    }
-    .modal-summary {
-      font-size: 0.95rem;
-      color: var(--text);
-      line-height: 1.7;
-      padding: 1rem;
-      background: var(--bg3);
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      margin-bottom: 1rem;
-    }
-    .modal-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-
-    /* ——— EMPTY STATE ——— */
-    .empty {
-      text-align: center;
-      padding: 4rem 2rem;
-      color: var(--muted);
-    }
-    .empty-icon { font-size: 2.5rem; margin-bottom: 1rem; }
-    .empty p { font-size: 0.9rem; }
-
-    @media (max-width: 600px) {
-      header { padding: 1rem 1.25rem; }
-      .logo { font-size: 1.5rem; }
-      .career-nav { padding: 0 1rem; }
-      main { padding: 1.5rem 1rem 3rem; }
-      .career-club { font-size: 2.5rem; }
-      .seasons-grid { grid-template-columns: 1fr 1fr; }
-    }
-  </style>
+@media (max-width: 560px) {
+  .ticket { grid-template-columns: 62px 1fr; grid-template-areas: "stub body" "stub act"; }
+  .ticket.has-editor { grid-template-areas: "stub body" "stub act" "stub edit"; }
+  .tl-row { grid-template-columns: 74px 1fr auto; }
+  .tl-row .date-edit { padding-left: 0; }
+  .ticket::before, .ticket::after { left: 54px; }
+  .num { font-size: 24px; }
+  .body { padding: 12px 14px 4px; }
+  .act { padding: 4px 14px 12px; justify-content: space-between; }
+  .grid2 { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bar i { transition: none; }
+  .stamp { transform: none; }
+}
+</style>
 </head>
 <body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Watchparty <span>Finito</span></h1>
+      <p id="tally" class="tally">Chargement de la liste…</p>
+    </div>
+    <button class="btn-add" id="open-add" type="button">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Ajouter un film ou une série
+    </button>
+  </header>
 
-<!-- ======= DONNÉES — MODIFIE ICI ======= -->
-<script>
-const CAREERS = [
-  {
-    id: "chateauroux",
-    club: "Châteauroux",
-    ligue: "Ligue 2",
-    debut: "2026",
-    seasons: [
-      {
-        year: "2026-27",
-        desc: "Première saison, montée surprise en fin de course.",
-        tags: ["promo"]
-      },
-      {
-        year: "2027-28",
-        desc: "Consolidation difficile, coupe de France mémorable.",
-        tags: ["coupe"]
-      }
-    ]
-  }
-  /* ——— AJOUTE UNE NOUVELLE CARRIÈRE ICI ——— */
-  /* ,{
-    id: "psg",
-    club: "Paris SG",
-    ligue: "Ligue 1",
-    debut: "2028",
-    seasons: [
-      { year: "2028-29", desc: "Domination totale, triplé historique.", tags: ["titre"] }
-    ]
-  } */
-];
-/* TYPES DE TAGS : "promo" | "titre" | "releg" | "coupe" | "neutre" */
-</script>
-<!-- ======= FIN DES DONNÉES ======= -->
+  <nav class="tabs-scroll" aria-label="Catégories">
+    <div class="tabs" id="tabs" role="tablist"></div>
+  </nav>
 
-<header>
-  <div>
-    <div class="logo">Football <span>MARQ</span>nager <span>26</span></div>
-    <div class="logo-sub">Mes carrières · FM 26</div>
-  </div>
-  <div style="font-size:0.75rem; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; text-align:right; display:none;" id="header-info"></div>
-</header>
-
-<nav class="career-nav" id="career-nav" role="tablist" aria-label="Sélection de carrière"></nav>
-
-<main>
-  <div id="career-pages"></div>
-</main>
-
-<div class="modal-bg" id="modal-bg" role="dialog" aria-modal="true" aria-labelledby="modal-season-year">
-  <div class="modal">
-    <button class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
-    <div class="modal-season" id="modal-season-year"></div>
-    <div class="modal-club" id="modal-club"></div>
-    <div class="modal-summary" id="modal-summary"></div>
-    <div class="modal-tags" id="modal-tags"></div>
-  </div>
+  <main id="main" aria-live="polite">
+    <div class="status">Chargement de la liste…</div>
+  </main>
 </div>
 
+<div class="overlay" id="overlay" hidden>
+  <form class="sheet" id="add-form" role="dialog" aria-modal="true" aria-labelledby="add-title" novalidate>
+    <h2 id="add-title">Ajouter</h2>
+    <div class="field">
+      <label for="f-title">Titre</label>
+      <input id="f-title" name="title" type="text" autocomplete="off" required placeholder="Ex. Fruitvale Station">
+    </div>
+    <div class="field">
+      <label id="kind-label">Type</label>
+      <div class="seg" role="radiogroup" aria-labelledby="kind-label">
+        <label for="f-kind-film"><input id="f-kind-film" type="radio" name="kind" value="film" checked><span>Film</span></label>
+        <label for="f-kind-serie"><input id="f-kind-serie" type="radio" name="kind" value="serie"><span>Série</span></label>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field">
+        <label for="f-year">Année</label>
+        <input id="f-year" name="year" type="number" inputmode="numeric" min="1890" max="2100" placeholder="2026">
+      </div>
+      <div class="field">
+        <label for="f-by">Réalisation / création</label>
+        <input id="f-by" name="by" type="text" autocomplete="off" placeholder="Facultatif">
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field">
+        <label for="f-tab">Onglet</label>
+        <select id="f-tab" name="tab"></select>
+      </div>
+      <div class="field" id="f-section-wrap">
+        <label for="f-section">Partie</label>
+        <select id="f-section" name="section"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label for="f-note">Note</label>
+      <input id="f-note" name="note" type="text" autocomplete="off" placeholder="Ex. Film de novembre 2026">
+    </div>
+    <p class="form-error" id="form-error" hidden></p>
+    <div class="sheet-actions">
+      <button type="button" class="btn-ghost" id="cancel-add">Annuler</button>
+      <button type="submit" class="btn-add" id="submit-add">Ajouter à la liste</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
 <script>
-const TAG_LABELS = {
-  promo: ["tag-promo", "↑ Promotion"],
-  titre: ["tag-titre", "★ Titre"],
-  releg: ["tag-releg", "↓ Relégation"],
-  coupe: ["tag-coupe", "🏆 Coupe"],
-  neutre: ["tag-neutre", "Saison"]
-};
+(function () {
+  "use strict";
 
-function renderTag(type) {
-  const [cls, label] = TAG_LABELS[type] || TAG_LABELS.neutre;
-  const el = document.createElement("span");
-  el.className = "tag " + cls;
-  el.textContent = label;
-  return el;
-}
+  var state = {
+    tabs: [], items: [],
+    loadedTabs: false, loadedItems: false,
+    dbStatus: "loading",      // loading | ok | none | slow | error
+    readOnly: false,
+    confirmDel: null,
+    editDate: null,
+    busy: {}
+  };
+  var db = null;
 
-function openModal(season, clubName) {
-  document.getElementById("modal-season-year").textContent = season.year;
-  document.getElementById("modal-club").textContent = clubName;
-  document.getElementById("modal-summary").textContent = season.desc;
-  const tagsEl = document.getElementById("modal-tags");
-  tagsEl.innerHTML = "";
-  (season.tags || []).forEach(t => tagsEl.appendChild(renderTag(t)));
-  document.getElementById("modal-bg").classList.add("open");
-  document.body.style.overflow = "hidden";
-}
-
-function closeModal() {
-  document.getElementById("modal-bg").classList.remove("open");
-  document.body.style.overflow = "";
-}
-
-document.getElementById("modal-close").addEventListener("click", closeModal);
-document.getElementById("modal-bg").addEventListener("click", e => {
-  if (e.target === document.getElementById("modal-bg")) closeModal();
-});
-document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
-
-// Build UI
-const nav = document.getElementById("career-nav");
-const pages = document.getElementById("career-pages");
-
-CAREERS.forEach((career, i) => {
-  // Tab
-  const tab = document.createElement("button");
-  tab.className = "career-tab" + (i === 0 ? " active" : "");
-  tab.setAttribute("role", "tab");
-  tab.setAttribute("aria-selected", i === 0 ? "true" : "false");
-  tab.innerHTML = `${career.club} <span class="badge">${career.seasons.length} saison${career.seasons.length > 1 ? "s" : ""}</span>`;
-  tab.addEventListener("click", () => switchCareer(career.id));
-  nav.appendChild(tab);
-
-  // Page
-  const page = document.createElement("div");
-  page.className = "career-page" + (i === 0 ? " active" : "");
-  page.id = "page-" + career.id;
-
-  const header = document.createElement("div");
-  header.className = "career-header";
-  header.innerHTML = `
-    <div>
-      <div class="career-club">${career.club.replace(/(\w+)$/, '<span class="highlight">$1</span>')}</div>
-      <div style="font-size:0.75rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-top:6px;">${career.ligue}</div>
-    </div>
-    <div class="career-meta">
-      <strong>${career.seasons.length}</strong>
-      saison${career.seasons.length > 1 ? "s" : ""} jouée${career.seasons.length > 1 ? "s" : ""}
-    </div>
-  `;
-
-  const grid = document.createElement("div");
-  grid.className = "seasons-grid";
-
-  if (career.seasons.length === 0) {
-    grid.innerHTML = `<div class="empty"><div class="empty-icon">⚽</div><p>Aucune saison enregistrée.</p></div>`;
-  } else {
-    career.seasons.forEach(season => {
-      const card = document.createElement("div");
-      card.className = "season-card";
-      card.setAttribute("tabindex", "0");
-      card.setAttribute("role", "button");
-      card.setAttribute("aria-label", `Saison ${season.year} — ${season.desc}`);
-
-      const tagsHTML = (season.tags || []).map(t => {
-        const [cls, label] = TAG_LABELS[t] || TAG_LABELS.neutre;
-        return `<span class="tag ${cls}">${label}</span>`;
-      }).join("");
-
-      card.innerHTML = `
-        <div class="season-year">${season.year}</div>
-        <div class="season-label">Saison</div>
-        <div class="season-desc">${season.desc}</div>
-        <div class="season-tags">${tagsHTML}</div>
-        <span class="season-arrow" aria-hidden="true">↗</span>
-      `;
-
-      card.addEventListener("click", () => openModal(season, career.club));
-      card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") openModal(season, career.club); });
-      grid.appendChild(card);
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(v) {
+    return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
+  function safeColor(c) { return /^#[0-9a-fA-F]{3,8}$/.test(String(c || "")) ? c : "#a59ac2"; }
+  function num(v, d) { var n = Number(v); return isFinite(n) ? n : d; }
+  function pad(n) { return n < 10 ? "0" + n : String(n); }
+  function slug(s) {
+    return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60) || "titre";
+  }
+  // Les dates de visionnage sont stockées en "AAAA-MM-JJ" (sans heure).
+  function dayOf(v) {
+    if (!v) return "";
+    var s = String(v);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    var d = new Date(s);
+    if (isNaN(d)) return "";
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  }
+  function todayStr() { return dayOf(new Date().toISOString()); }
+  function fmtDate(v) {
+    var s = dayOf(v);
+    if (!s) return "";
+    var p = s.split("-");
+    return p[2] + "/" + p[1] + "/" + p[0].slice(2);
+  }
+  var PENCIL = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2.5l2.5 2.5L5.5 13H3v-2.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
 
-  page.appendChild(header);
-  page.appendChild(grid);
-  pages.appendChild(page);
-});
+  var toastTimer = null;
+  function toast(msg) {
+    var t = $("toast");
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.hidden = true; }, 3200);
+  }
 
-function switchCareer(id) {
-  document.querySelectorAll(".career-tab").forEach((tab, i) => {
-    const active = CAREERS[i].id === id;
-    tab.classList.toggle("active", active);
-    tab.setAttribute("aria-selected", active ? "true" : "false");
+  /* ---------- Données ---------- */
+  function tabsSorted() {
+    return state.tabs.slice().sort(function (a, b) { return num(a.order, 99) - num(b.order, 99); });
+  }
+  function fallbackTabId() {
+    var t = tabsSorted();
+    var autre = t.filter(function (x) { return x.id === "autre"; })[0];
+    return autre ? autre.id : (t.length ? t[t.length - 1].id : null);
+  }
+  function itemsOfTab(tabId) {
+    var known = {};
+    state.tabs.forEach(function (t) { known[t.id] = true; });
+    var fb = fallbackTabId();
+    return state.items.filter(function (it) {
+      return it.tab === tabId || (!known[it.tab] && tabId === fb);
+    });
+  }
+  function byOrder(a, b) {
+    var d = num(a.order, 9999) - num(b.order, 9999);
+    return d !== 0 ? d : String(a.title).localeCompare(String(b.title), "fr");
+  }
+  function groupsOf(tab) {
+    var items = itemsOfTab(tab.id).sort(byOrder);
+    var sections = Array.isArray(tab.sections) ? tab.sections : [];
+    if (!sections.length) return [{ id: null, name: null, items: items }];
+    var ids = {};
+    var groups = sections.map(function (s) { ids[s.id] = true; return { id: s.id, name: s.name, note: s.note, items: [] }; });
+    var loose = [];
+    items.forEach(function (it) {
+      if (it.section && ids[it.section]) {
+        groups.filter(function (g) { return g.id === it.section; })[0].items.push(it);
+      } else loose.push(it);
+    });
+    if (loose.length) groups.push({ id: "_", name: "Sans partie", items: loose });
+    return groups;
+  }
+  // Vue active : "accueil" ou l'id d'un onglet.
+  function activeTabId() {
+    var h = decodeURIComponent((location.hash || "").slice(1));
+    if (state.tabs.some(function (x) { return x.id === h; })) return h;
+    return "accueil";
+  }
+  function tabById(id) { return state.tabs.filter(function (t) { return t.id === id; })[0]; }
+  function itemById(id) { return state.items.filter(function (x) { return x.id === id; })[0]; }
+  function orderedItems(tab) {
+    var all = [];
+    groupsOf(tab).forEach(function (g) { all = all.concat(g.items); });
+    return all;
+  }
+
+  /* ---------- Rendu ---------- */
+  function renderTally() {
+    var el = $("tally");
+    if (state.dbStatus === "none") { el.textContent = "Liste indisponible dans cette vue."; return; }
+    if (!(state.loadedTabs && state.loadedItems)) { el.textContent = "Chargement de la liste…"; return; }
+    var total = state.items.length;
+    var seen = state.items.filter(function (i) { return i.seen; }).length;
+    el.innerHTML = "<b>" + seen + "</b> vu" + (seen > 1 ? "s" : "") + " · <b>" + (total - seen) + "</b> à voir · " + total + " au total" +
+      (state.staticDate ? " · liste au " + esc(fmtDate(state.staticDate)) : "");
+  }
+
+  function renderTabs() {
+    var active = activeTabId();
+    var total = state.items.length, seenAll = state.items.filter(function (i) { return i.seen; }).length;
+    var home = '<button type="button" role="tab" class="tab tab-home" data-tab="accueil" aria-selected="' + (active === "accueil") + '" style="--acc:var(--ink)">' +
+      '<span class="tab-name">Accueil</span>' +
+      '<span class="tab-count">' + seenAll + ' / ' + total + ' vus</span>' +
+      '<span class="bar"><i style="width:' + (total ? Math.round(seenAll / total * 100) : 0) + '%"></i></span></button>';
+    $("tabs").innerHTML = home + tabsSorted().map(function (t) {
+      var its = itemsOfTab(t.id);
+      var seen = its.filter(function (i) { return i.seen; }).length;
+      var pct = its.length ? Math.round(seen / its.length * 100) : 0;
+      return '<button type="button" role="tab" class="tab" data-tab="' + esc(t.id) + '" aria-selected="' + (t.id === active) + '" style="--acc:' + safeColor(t.accent) + '">' +
+        '<span class="tab-name">' + esc(t.name) + '</span>' +
+        '<span class="tab-count">' + (its.length ? seen + " / " + its.length + " vus" : "vide") + '</span>' +
+        '<span class="bar"><i style="width:' + pct + '%"></i></span>' +
+        '</button>';
+    }).join("");
+  }
+
+  function dateEditorHTML(it) {
+    var fid = "d-" + it.id;
+    return '<div class="date-edit">' +
+      '<label class="lbl" for="' + esc(fid) + '">Vu le</label>' +
+      '<input type="date" id="' + esc(fid) + '" value="' + esc(dayOf(it.seenAt)) + '" max="' + todayStr() + '">' +
+      '<button type="button" class="save" data-act="date-save" data-id="' + esc(it.id) + '">Enregistrer</button>' +
+      '<button type="button" data-act="date-cancel">Annuler</button>' +
+      '<button type="button" class="unseen" data-act="unseen" data-id="' + esc(it.id) + '">Remettre à voir</button>' +
+      '</div>';
+  }
+
+  function ticketHTML(it, n, isNext, acc) {
+    var meta = [it.kind === "serie" ? "Série" : "Film", it.year, it.by].filter(Boolean).map(esc).join(" · ");
+    var editing = !state.readOnly && it.seen && state.editDate === it.id;
+    var stampInner = 'Vu' + (it.seenAt ? '<small>' + esc(fmtDate(it.seenAt)) + '</small>' : '<small>date ?</small>');
+    var act;
+    if (state.confirmDel === it.id) {
+      act = '<div class="confirm"><span>Retirer ?</span>' +
+        '<button type="button" class="yes" data-act="del-yes" data-id="' + esc(it.id) + '">Oui</button>' +
+        '<button type="button" data-act="del-no">Non</button></div>';
+    } else if (state.readOnly) {
+      act = it.seen ? '<span class="stamp">' + stampInner + '</span>' : "";
+    } else {
+      var main = it.seen
+        ? '<button type="button" class="stamp" data-act="date-open" data-id="' + esc(it.id) + '" title="Modifier la date ou remettre à voir">' + stampInner + '</button>'
+        : '<button type="button" class="btn-seen" data-act="toggle" data-id="' + esc(it.id) + '">Marquer vu</button>';
+      var del = '<button type="button" class="btn-x" data-act="del" data-id="' + esc(it.id) + '" aria-label="Retirer ' + esc(it.title) + ' de la liste">' +
+        '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>';
+      act = main + del;
+    }
+    return '<article class="ticket' + (it.seen ? " is-seen" : "") + (isNext ? " is-next" : "") + (editing ? " has-editor" : "") + '" style="--acc:' + acc + '">' +
+      '<div class="stub"><span class="num">' + pad(n) + '</span><span class="kind">' + (it.kind === "serie" ? "Série" : "Film") + '</span></div>' +
+      '<div class="body">' + (isNext ? '<span class="flag">Prochaine séance</span>' : '') +
+      '<h4>' + esc(it.title) + '</h4>' +
+      '<p class="meta">' + meta + '</p>' +
+      (it.note ? '<p class="note">' + esc(it.note) + '</p>' : '') +
+      '</div>' +
+      '<div class="act">' + act + '</div>' +
+      (editing ? dateEditorHTML(it) : '') +
+      '</article>';
+  }
+
+  function renderHome() {
+    var tabs = tabsSorted();
+    var html = '<div class="home">';
+
+    // Prochaines séances : le premier titre non vu de chaque onglet
+    var nexts = [];
+    tabs.forEach(function (t) {
+      var all = orderedItems(t);
+      if (!all.length) return;
+      var nx = all.filter(function (i) { return !i.seen; })[0];
+      nexts.push({ tab: t, item: nx, all: all });
+    });
+    html += '<section class="home-block"><header><h2>Prochaines séances</h2><span>une par catégorie</span></header>';
+    if (!nexts.length) {
+      html += '<div class="empty">Ajoute un film ou une série pour commencer.</div>';
+    } else {
+      html += '<div class="next-grid">';
+      nexts.forEach(function (n) {
+        var acc = safeColor(n.tab.accent);
+        if (!n.item) {
+          html += '<article class="next-card done" style="--acc:' + acc + '">' +
+            '<button type="button" class="from" data-tab="' + esc(n.tab.id) + '">' + esc(n.tab.name) + '</button>' +
+            '<h3>Tout est vu</h3><p>' + (n.all.length > 1 ? 'Les ' + n.all.length + ' titres sont terminés.' : 'Le seul titre est terminé.') + '</p></article>';
+          return;
+        }
+        var it = n.item;
+        var meta = [it.kind === "serie" ? "Série" : "Film", it.year, it.by].filter(Boolean).map(esc).join(" · ");
+        var sec = (Array.isArray(n.tab.sections) ? n.tab.sections : []).filter(function (s) { return s.id === it.section; })[0];
+        html += '<article class="next-card" style="--acc:' + acc + '">' +
+          '<button type="button" class="from" data-tab="' + esc(n.tab.id) + '">' + esc(n.tab.name) + (sec ? ' · ' + esc(sec.name) : '') + '</button>' +
+          '<h3>' + esc(it.title) + '</h3>' +
+          '<p class="meta">' + meta + '</p>' +
+          (it.note ? '<p class="note">' + esc(it.note) + '</p>' : '') +
+          (state.readOnly ? '' : '<button type="button" class="btn-seen" data-act="toggle" data-id="' + esc(it.id) + '">Marquer vu</button>') +
+          '</article>';
+      });
+      html += '</div>';
+    }
+    html += '</section>';
+
+    // Catégories
+    html += '<section class="home-block"><header><h2>Catégories</h2><span>' + tabs.length + ' onglets</span></header><div class="cat-grid">';
+    tabs.forEach(function (t) {
+      var its = itemsOfTab(t.id);
+      var s = its.filter(function (i) { return i.seen; }).length;
+      var pct = its.length ? Math.round(s / its.length * 100) : 0;
+      html += '<button type="button" class="cat" data-tab="' + esc(t.id) + '" style="--acc:' + safeColor(t.accent) + '">' +
+        (t.kicker ? '<span class="k">' + esc(t.kicker) + '</span>' : '') +
+        '<span class="n">' + esc(t.name) + '</span>' +
+        '<span class="c">' + (its.length ? '<b>' + s + '</b> / ' + its.length + ' vus' : 'vide') + '</span>' +
+        '<span class="bar"><i style="width:' + pct + '%"></i></span></button>';
+    });
+    html += '</div></section>';
+
+    // Journal des visionnages
+    var seen = state.items.filter(function (i) { return i.seen; });
+    var dated = seen.filter(function (i) { return dayOf(i.seenAt); })
+      .sort(function (a, b) { return dayOf(b.seenAt).localeCompare(dayOf(a.seenAt)); });
+    var undated = seen.filter(function (i) { return !dayOf(i.seenAt); });
+    html += '<section class="home-block"><header><h2>Journal des visionnages</h2><span>' + seen.length + ' vu' + (seen.length > 1 ? 's' : '') + '</span></header>';
+    if (!seen.length) {
+      html += '<div class="empty">Rien de vu pour l\'instant.</div>';
+    } else {
+      html += '<div class="timeline">';
+      dated.concat(undated).forEach(function (it) {
+        var t = tabById(it.tab);
+        var acc = safeColor(t && t.accent);
+        var editing = !state.readOnly && state.editDate === it.id;
+        html += '<div class="tl-row' + (editing ? ' has-editor' : '') + '" style="--acc:' + acc + '">' +
+          '<span class="tl-date">' + (dayOf(it.seenAt) ? esc(fmtDate(it.seenAt)) : 'sans date') + '</span>' +
+          '<span class="tl-main"><strong>' + esc(it.title) + '</strong>' +
+          (it.year ? '<span class="meta">' + esc(it.year) + '</span>' : '') +
+          (t ? '<span class="chip">' + esc(t.name) + '</span>' : '') + '</span>' +
+          '<span class="tl-act">' + (state.readOnly || editing ? '' :
+            '<button type="button" class="btn-edit" data-act="date-open" data-id="' + esc(it.id) + '" aria-label="Modifier la date de ' + esc(it.title) + '">' + PENCIL + '<span>Date</span></button>') + '</span>' +
+          (editing ? dateEditorHTML(it) : '') +
+          '</div>';
+      });
+      html += '</div>';
+    }
+    html += '</section></div>';
+    $("main").innerHTML = html;
+  }
+
+  function renderMain() {
+    var main = $("main");
+    if (state.dbStatus === "none") {
+      main.innerHTML = '<div class="status warn">La liste n\'est pas accessible ici. Ouvre la page sur claude.ai en étant connecté pour la voir et la modifier.</div>';
+      return;
+    }
+    if (state.dbStatus === "error") {
+      main.innerHTML = '<div class="status warn">La liste ne répond plus. Recharge la page pour réessayer.</div>';
+      return;
+    }
+    if (!(state.loadedTabs && state.loadedItems)) {
+      main.innerHTML = '<div class="status">' + (state.dbStatus === "slow" ? "La liste met du temps à arriver. Vérifie ta connexion." : "Chargement de la liste…") + '</div>';
+      return;
+    }
+    var view = activeTabId();
+    if (view === "accueil") { renderHome(); return; }
+    var tab = tabById(view);
+    var acc = safeColor(tab.accent);
+    var groups = groupsOf(tab);
+    var all = [];
+    groups.forEach(function (g) { all = all.concat(g.items); });
+    var seen = all.filter(function (i) { return i.seen; }).length;
+    var nextId = (all.filter(function (i) { return !i.seen; })[0] || {}).id;
+    var pct = all.length ? Math.round(seen / all.length * 100) : 0;
+
+    var html = '<section class="panel" role="tabpanel" style="--acc:' + acc + '">' +
+      '<header class="panel-head">' +
+      (tab.kicker ? '<span class="kicker">' + esc(tab.kicker) + '</span>' : '') +
+      '<h2>' + esc(tab.name) + '</h2>' +
+      (tab.description ? '<p>' + esc(tab.description) + '</p>' : '') +
+      (all.length ? '<span class="bar" aria-label="' + seen + ' sur ' + all.length + ' vus"><i style="width:' + pct + '%"></i></span>' : '') +
+      '</header>';
+
+    if (!all.length) {
+      html += '<div class="empty">Rien ici pour l\'instant. Ajoute un film ou une série avec le bouton en haut.</div>';
+    } else {
+      var n = 0;
+      groups.forEach(function (g) {
+        if (!g.items.length && !g.name) return;
+        var gs = g.items.filter(function (i) { return i.seen; }).length;
+        html += '<div class="section">';
+        if (g.name) {
+          html += '<div class="section-title"><h3>' + esc(g.name) + '</h3><span>' + gs + ' / ' + g.items.length + ' vus</span></div>';
+          if (g.note) html += '<p class="section-note">' + esc(g.note) + '</p>';
+        }
+        html += '<div class="list">';
+        if (!g.items.length) html += '<div class="empty">Rien dans cette partie pour l\'instant.</div>';
+        g.items.forEach(function (it) { n++; html += ticketHTML(it, n, it.id === nextId, acc); });
+        html += '</div></div>';
+      });
+    }
+    html += '</section>';
+    main.innerHTML = html;
+  }
+
+  function render() {
+    // Garde la date en cours de saisie si un autre appareil met la liste à jour
+    var open = state.editDate ? document.getElementById("d-" + state.editDate) : null;
+    var typed = open ? open.value : null, hadFocus = open && document.activeElement === open;
+    if (state.editDate) {
+      var ed = itemById(state.editDate);
+      if (!ed || !ed.seen) state.editDate = null;
+    }
+    renderTally();
+    renderTabs();
+    renderMain();
+    if (typed !== null && state.editDate) {
+      var again = document.getElementById("d-" + state.editDate);
+      if (again) { again.value = typed; if (hadFocus) again.focus(); }
+    }
+    $("open-add").hidden = state.readOnly || state.dbStatus === "none";
+  }
+
+  /* ---------- Écritures ---------- */
+  function handleWriteError(e) {
+    var code = e && e.code;
+    if (code === "invalid_argument" || code === "not_granted") {
+      state.readOnly = true;
+      toast("Tu peux consulter la liste, mais pas la modifier.");
+      render();
+    } else if (code === "quota_exceeded") {
+      toast("La liste est pleine. Retire quelques titres avant d'en ajouter.");
+    } else {
+      toast("L'enregistrement a échoué. Réessaie dans un instant.");
+    }
+  }
+
+  function toggleSeen(id) {
+    if (!db || state.busy[id]) return;
+    var it = state.items.filter(function (x) { return x.id === id; })[0];
+    if (!it) return;
+    state.busy[id] = true;
+    var nowSeen = !it.seen;
+    db.doc("items/" + id).update({ seen: nowSeen, seenAt: nowSeen ? todayStr() : null })
+      .then(function () { if (nowSeen) toast("« " + it.title + " » vu aujourd'hui. Clique sur le tampon pour changer la date."); })
+      .catch(handleWriteError)
+      .then(function () { delete state.busy[id]; });
+  }
+
+  function saveDate(id) {
+    if (!db || state.busy[id]) return;
+    var it = itemById(id);
+    var input = document.getElementById("d-" + id);
+    if (!it || !input) return;
+    var v = input.value;
+    if (v && !/^\d{4}-\d{2}-\d{2}$/.test(v)) { toast("Date invalide. Choisis-la dans le calendrier."); return; }
+    state.busy[id] = true;
+    state.editDate = null;
+    render();
+    db.doc("items/" + id).update({ seen: true, seenAt: v || null })
+      .then(function () { toast(v ? "Date enregistrée : " + fmtDate(v) + "." : "Date retirée."); })
+      .catch(handleWriteError)
+      .then(function () { delete state.busy[id]; });
+  }
+
+  function setUnseen(id) {
+    if (!db || state.busy[id]) return;
+    var it = itemById(id);
+    state.busy[id] = true;
+    state.editDate = null;
+    render();
+    db.doc("items/" + id).update({ seen: false, seenAt: null })
+      .then(function () { if (it) toast("« " + it.title + " » remis dans « à voir »."); })
+      .catch(handleWriteError)
+      .then(function () { delete state.busy[id]; });
+  }
+
+  function removeItem(id) {
+    if (!db) return;
+    var it = state.items.filter(function (x) { return x.id === id; })[0];
+    state.confirmDel = null;
+    db.doc("items/" + id).delete()
+      .then(function () { if (it) toast("« " + it.title + " » retiré de la liste."); })
+      .catch(handleWriteError);
+    render();
+  }
+
+  /* ---------- Formulaire d'ajout ---------- */
+  function fillSectionSelect() {
+    var tab = state.tabs.filter(function (t) { return t.id === $("f-tab").value; })[0];
+    var secs = tab && Array.isArray(tab.sections) ? tab.sections : [];
+    $("f-section-wrap").hidden = !secs.length;
+    $("f-section").innerHTML = secs.map(function (s) {
+      return '<option value="' + esc(s.id) + '">' + esc(s.name) + '</option>';
+    }).join("");
+  }
+  function openAdd() {
+    var tabs = tabsSorted();
+    if (!tabs.length) { toast("La liste n'est pas encore chargée."); return; }
+    $("f-tab").innerHTML = tabs.map(function (t) {
+      return '<option value="' + esc(t.id) + '">' + esc(t.name) + '</option>';
+    }).join("");
+    var cur = activeTabId();
+    if (cur === "accueil") cur = (tabs.filter(function (t) { return t.id === "autre"; })[0] || tabs[0]).id;
+    $("add-form").reset();
+    $("f-tab").value = cur;
+    fillSectionSelect();
+    $("form-error").hidden = true;
+    $("overlay").hidden = false;
+    setTimeout(function () { $("f-title").focus(); }, 0);
+  }
+  function closeAdd() { $("overlay").hidden = true; $("open-add").focus(); }
+
+  function submitAdd(ev) {
+    ev.preventDefault();
+    if (!db) return;
+    var title = $("f-title").value.trim();
+    var err = $("form-error");
+    if (!title) { err.textContent = "Donne un titre au film ou à la série."; err.hidden = false; $("f-title").focus(); return; }
+    var tabId = $("f-tab").value;
+    var tab = state.tabs.filter(function (t) { return t.id === tabId; })[0];
+    var section = (tab && Array.isArray(tab.sections) && tab.sections.length) ? $("f-section").value : null;
+    var kind = (document.querySelector('input[name="kind"]:checked') || {}).value || "film";
+    var yearRaw = $("f-year").value.trim();
+    var year = yearRaw ? Math.round(Number(yearRaw)) : null;
+    if (yearRaw && !(year >= 1890 && year <= 2100)) { err.textContent = "L'année doit être comprise entre 1890 et 2100."; err.hidden = false; return; }
+    var maxOrder = 0;
+    itemsOfTab(tabId).forEach(function (i) { maxOrder = Math.max(maxOrder, num(i.order, 0)); });
+    var id = slug(title) + "-" + Date.now().toString(36);
+    var doc = {
+      title: title, kind: kind, year: year, by: $("f-by").value.trim() || null,
+      tab: tabId, section: section || null, note: $("f-note").value.trim() || null,
+      order: maxOrder + 10, seen: false, seenAt: null, addedAt: new Date().toISOString()
+    };
+    $("submit-add").disabled = true;
+    db.collection("items").doc(id).set(doc)
+      .then(function () {
+        closeAdd();
+        if (location.hash.slice(1) !== tabId) location.hash = tabId;
+        toast("« " + title + " » ajouté.");
+      })
+      .catch(function (e) { closeAdd(); handleWriteError(e); })
+      .then(function () { $("submit-add").disabled = false; });
+  }
+
+  /* ---------- Événements ---------- */
+  function goTo(id) {
+    state.confirmDel = null; state.editDate = null;
+    if ((location.hash || "").slice(1) === id) render(); else location.hash = id;
+  }
+  $("tabs").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-tab]");
+    if (b) goTo(b.getAttribute("data-tab"));
   });
-  document.querySelectorAll(".career-page").forEach(p => {
-    p.classList.toggle("active", p.id === "page-" + id);
+  $("main").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && e.target.matches('.date-edit input[type="date"]')) {
+      e.preventDefault(); saveDate(e.target.id.slice(2));
+    }
   });
-}
+  $("main").addEventListener("click", function (e) {
+    var g = e.target.closest("[data-tab]");
+    if (g) { goTo(g.getAttribute("data-tab")); return; }
+    var b = e.target.closest("[data-act]");
+    if (!b || state.readOnly) return;
+    var act = b.getAttribute("data-act"), id = b.getAttribute("data-id");
+    if (act === "date-open") {
+      state.editDate = id; state.confirmDel = null; render();
+      var inp = document.getElementById("d-" + id);
+      if (inp) inp.focus();
+    }
+    else if (act === "date-cancel") { state.editDate = null; render(); }
+    else if (act === "date-save") saveDate(id);
+    else if (act === "unseen") setUnseen(id);
+    else if (act === "toggle") toggleSeen(id);
+    else if (act === "del") { state.confirmDel = id; render(); }
+    else if (act === "del-no") { state.confirmDel = null; render(); }
+    else if (act === "del-yes") removeItem(id);
+  });
+  window.addEventListener("hashchange", render);
+  $("open-add").addEventListener("click", openAdd);
+  $("cancel-add").addEventListener("click", closeAdd);
+  $("f-tab").addEventListener("change", fillSectionSelect);
+  $("add-form").addEventListener("submit", submitAdd);
+  $("overlay").addEventListener("click", function (e) { if (e.target === $("overlay")) closeAdd(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("overlay").hidden) closeAdd(); });
+
+  /* ---------- Connexion à la base ---------- */
+  var slowTimer = null;
+  function clearSlow() { if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; } if (state.dbStatus === "slow") state.dbStatus = "ok"; }
+  function onListenErr() { clearSlow(); state.dbStatus = "error"; render(); }
+
+  // Hors de claude.ai (ex. GitHub Pages) : on lit la copie data.json, en lecture seule.
+  function loadStatic() {
+    if (typeof fetch !== "function" || location.protocol === "about:") { state.dbStatus = "none"; render(); return; }
+    fetch("data.json", { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (j) {
+        state.tabs = Array.isArray(j.tabs) ? j.tabs : [];
+        state.items = Array.isArray(j.items) ? j.items : [];
+        state.readOnly = true;
+        state.staticDate = j.exportedAt || null;
+        state.loadedTabs = state.loadedItems = true;
+        state.dbStatus = "ok";
+        render();
+      })
+      .catch(function () { state.dbStatus = "none"; render(); });
+  }
+
+  render();
+
+  if (!window.claude || typeof window.claude.use !== "function") { loadStatic(); return; }
+  window.claude.use("db").then(function (d) {
+    if (!d) { loadStatic(); return; }
+    db = d;
+    state.dbStatus = "ok";
+    slowTimer = setTimeout(function () {
+      if (!(state.loadedTabs && state.loadedItems)) { state.dbStatus = "slow"; render(); }
+    }, 10000);
+    db.collection("tabs").onSnapshot(function (s) {
+      state.tabs = s.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+      state.loadedTabs = true;
+      if (!s.metadata.fromCache && state.loadedItems) clearSlow();
+      render();
+    }, onListenErr);
+    db.collection("items").onSnapshot(function (s) {
+      state.items = s.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+      state.loadedItems = true;
+      if (!s.metadata.fromCache && state.loadedTabs) clearSlow();
+      if (state.confirmDel && !state.items.some(function (i) { return i.id === state.confirmDel; })) state.confirmDel = null;
+      render();
+    }, onListenErr);
+  }, function () { loadStatic(); });
+})();
 </script>
 </body>
 </html>
