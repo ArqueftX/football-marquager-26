@@ -25,6 +25,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; }
 body {
   background: var(--bg);
@@ -177,6 +178,13 @@ button { cursor: pointer; }
 .btn-ghost { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 10px 16px; }
 .btn-ghost:hover { background: var(--surface-2); }
 .form-error { color: var(--danger); font-size: 13.5px; margin: 0; }
+.top-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.top-actions .btn-ghost { font-size: 14px; }
+.gh-state { font-family: var(--mono); font-size: 12px; color: var(--finito); letter-spacing: .04em; }
+.sheet-intro { margin: 0; color: var(--muted); font-size: 14px; }
+.steps { margin: 0; padding-left: 20px; display: grid; gap: 6px; color: var(--muted); font-size: 14px; }
+.steps b { color: var(--ink); font-weight: 600; }
+.steps a { color: var(--finito); }
 
 .toast {
   position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--bg);
@@ -272,10 +280,14 @@ button { cursor: pointer; }
       <h1>Watchparty <span>Finito</span></h1>
       <p id="tally" class="tally">Chargement de la liste…</p>
     </div>
-    <button class="btn-add" id="open-add" type="button">
-      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      Ajouter un film ou une série
-    </button>
+    <div class="top-actions">
+      <span class="gh-state" id="gh-state" hidden>Mode édition</span>
+      <button class="btn-ghost" id="gh-connect" type="button" hidden>Se connecter pour modifier</button>
+      <button class="btn-add" id="open-add" type="button">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Ajouter un film ou une série
+      </button>
+    </div>
   </header>
 
   <nav class="tabs-scroll" aria-label="Catégories">
@@ -333,6 +345,29 @@ button { cursor: pointer; }
   </form>
 </div>
 
+<div class="overlay" id="gh-overlay" hidden>
+  <form class="sheet" id="gh-form" role="dialog" aria-modal="true" aria-labelledby="gh-title" novalidate>
+    <h2 id="gh-title">Modifier la liste</h2>
+    <p class="sheet-intro">Colle ton jeton GitHub pour cocher les visionnages, changer les dates et ajouter des titres. Il reste enregistré dans ce navigateur, nulle part ailleurs.</p>
+    <ol class="steps">
+      <li>Ouvre <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">la page de création de jeton</a>, connecté à ton compte GitHub.</li>
+      <li>Donne-lui un nom (par exemple <b>Watchparty</b>) et choisis une date d'expiration.</li>
+      <li><b>Repository access</b> : « Only select repositories », puis <b id="gh-repo-name">football-marquager-26</b>.</li>
+      <li><b>Permissions</b> → Repository permissions → <b>Contents</b> : « Read and write ».</li>
+      <li>Clique sur <b>Generate token</b>, copie le jeton et colle-le ci-dessous.</li>
+    </ol>
+    <div class="field">
+      <label for="gh-token">Jeton GitHub</label>
+      <input id="gh-token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+    </div>
+    <p class="form-error" id="gh-error" hidden></p>
+    <div class="sheet-actions">
+      <button type="button" class="btn-ghost" id="gh-cancel">Annuler</button>
+      <button type="submit" class="btn-add" id="gh-submit">Se connecter</button>
+    </div>
+  </form>
+</div>
+
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
@@ -349,6 +384,8 @@ button { cursor: pointer; }
     busy: {}
   };
   var db = null;
+  var store = null;   // couche d'écriture : base Claude ou dépôt GitHub (null = lecture seule)
+  state.mode = "loading"; // claude | static | github | none
 
   var $ = function (id) { return document.getElementById(id); };
   function esc(v) {
@@ -447,7 +484,7 @@ button { cursor: pointer; }
     var total = state.items.length;
     var seen = state.items.filter(function (i) { return i.seen; }).length;
     el.innerHTML = "<b>" + seen + "</b> vu" + (seen > 1 ? "s" : "") + " · <b>" + (total - seen) + "</b> à voir · " + total + " au total" +
-      (state.staticDate ? " · liste au " + esc(fmtDate(state.staticDate)) : "");
+      (state.staticDate && state.mode !== "claude" ? " · mise à jour le " + esc(fmtDate(state.staticDate)) : "");
   }
 
   function renderTabs() {
@@ -666,36 +703,141 @@ button { cursor: pointer; }
       if (again) { again.value = typed; if (hadFocus) again.focus(); }
     }
     $("open-add").hidden = state.readOnly || state.dbStatus === "none";
+    var ghPossible = (state.mode === "static" || state.mode === "github") && state.dbStatus === "ok";
+    $("gh-connect").hidden = !ghPossible;
+    $("gh-connect").textContent = state.mode === "github" ? "Se déconnecter" : "Se connecter pour modifier";
+    $("gh-state").hidden = state.mode !== "github";
   }
 
   /* ---------- Écritures ---------- */
+  /* --- Stockage 1 : base de l'artefact Claude --- */
+  function dbStore(d) {
+    return {
+      update: function (id, f) { return d.doc("items/" + id).update(f); },
+      remove: function (id) { return d.doc("items/" + id).delete(); },
+      add: function (id, doc) { return d.collection("items").doc(id).set(doc); }
+    };
+  }
+
+  /* --- Stockage 2 : data.json du dépôt GitHub, via l'API et un jeton --- */
+  var GH = (function () {
+    var m = location.hostname.match(/^([^.]+)\.github\.io$/i);
+    var seg = location.pathname.split("/").filter(Boolean)[0];
+    return { owner: m ? m[1] : "ArqueftX", repo: (m && seg) ? seg : "football-marquager-26", branch: "main", path: "data.json" };
+  })();
+  var TOKEN_KEY = "wpf-gh-token";
+  function getToken() { try { return localStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; } }
+  function setToken(t) { try { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
+  function b64encode(s) { return btoa(unescape(encodeURIComponent(s))); }
+  function b64decode(s) { return decodeURIComponent(escape(atob(String(s).replace(/\s/g, "")))); }
+
+  function ghApi(method, body) {
+    var url = "https://api.github.com/repos/" + GH.owner + "/" + GH.repo + "/contents/" + GH.path +
+      (method === "GET" ? "?ref=" + GH.branch : "");
+    return fetch(url, {
+      method: method, cache: "no-store",
+      headers: { "Authorization": "Bearer " + getToken(), "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" },
+      body: body ? JSON.stringify(body) : undefined
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (!r.ok) { var e = new Error(j.message || ("HTTP " + r.status)); e.status = r.status; throw e; }
+        return j;
+      });
+    });
+  }
+
+  var gh = { sha: null, data: null, queue: Promise.resolve() };
+  function applyData(j) {
+    state.tabs = Array.isArray(j.tabs) ? j.tabs : [];
+    state.items = Array.isArray(j.items) ? j.items : [];
+    state.staticDate = j.exportedAt || null;
+    state.loadedTabs = state.loadedItems = true;
+    state.dbStatus = "ok";
+    render();
+  }
+  function ghLoad() {
+    return ghApi("GET").then(function (j) {
+      gh.sha = j.sha;
+      gh.data = JSON.parse(b64decode(j.content));
+      applyData(gh.data);
+    });
+  }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  // Applique une modification : affichage immédiat, puis commit de data.json (une écriture à la fois).
+  function ghCommit(mutate, message) {
+    var preview = clone({ tabs: state.tabs, items: state.items, exportedAt: state.staticDate });
+    mutate(preview);
+    state.items = preview.items;
+    render();
+    function attempt(retried) {
+      var next = clone(gh.data);
+      mutate(next);
+      next.exportedAt = todayStr();
+      return ghApi("PUT", { message: message, content: b64encode(JSON.stringify(next, null, 2) + "\n"), sha: gh.sha, branch: GH.branch })
+        .then(function (res) { gh.sha = res.content.sha; gh.data = next; applyData(next); })
+        .catch(function (e) {
+          // Le fichier a changé entre-temps (autre appareil) : on relit et on réapplique une fois.
+          if (!retried && (e.status === 409 || e.status === 422)) return ghLoad().then(function () { return attempt(true); });
+          throw e;
+        });
+    }
+    var p = gh.queue.then(function () { return attempt(false); });
+    gh.queue = p.catch(function () {});
+    return p.catch(function (e) { if (gh.data) applyData(gh.data); throw e; });
+  }
+  function ghStore() {
+    return {
+      update: function (id, f, msg) {
+        return ghCommit(function (d) { d.items.forEach(function (i) { if (i.id === id) Object.assign(i, f); }); }, msg);
+      },
+      remove: function (id, msg) {
+        return ghCommit(function (d) { d.items = d.items.filter(function (i) { return i.id !== id; }); }, msg);
+      },
+      add: function (id, doc, msg) {
+        return ghCommit(function (d) { d.items.push(Object.assign({ id: id }, doc)); }, msg);
+      }
+    };
+  }
+
+  function disconnectGh(msg) {
+    setToken("");
+    store = null; state.readOnly = true; state.mode = "static";
+    state.editDate = null; state.confirmDel = null;
+    render();
+    if (msg) toast(msg);
+  }
+
   function handleWriteError(e) {
-    var code = e && e.code;
-    if (code === "invalid_argument" || code === "not_granted") {
-      state.readOnly = true;
+    var code = e && e.code, status = e && e.status;
+    if (status === 401) {
+      disconnectGh("Ton jeton GitHub est refusé ou a expiré. Reconnecte-toi avec un nouveau jeton.");
+    } else if (status === 403 || status === 404) {
+      toast("Le jeton n'a pas le droit de modifier ce dépôt. Vérifie la permission Contents : Read and write.");
+    } else if (code === "invalid_argument" || code === "not_granted") {
+      state.readOnly = true; store = null;
       toast("Tu peux consulter la liste, mais pas la modifier.");
       render();
     } else if (code === "quota_exceeded") {
       toast("La liste est pleine. Retire quelques titres avant d'en ajouter.");
     } else {
-      toast("L'enregistrement a échoué. Réessaie dans un instant.");
+      toast("L'enregistrement a échoué. Vérifie ta connexion et réessaie.");
     }
   }
 
   function toggleSeen(id) {
-    if (!db || state.busy[id]) return;
-    var it = state.items.filter(function (x) { return x.id === id; })[0];
+    if (!store || state.busy[id]) return;
+    var it = itemById(id);
     if (!it) return;
     state.busy[id] = true;
     var nowSeen = !it.seen;
-    db.doc("items/" + id).update({ seen: nowSeen, seenAt: nowSeen ? todayStr() : null })
+    store.update(id, { seen: nowSeen, seenAt: nowSeen ? todayStr() : null }, (nowSeen ? "Vu : " : "À voir : ") + it.title)
       .then(function () { if (nowSeen) toast("« " + it.title + " » vu aujourd'hui. Clique sur le tampon pour changer la date."); })
       .catch(handleWriteError)
       .then(function () { delete state.busy[id]; });
   }
 
   function saveDate(id) {
-    if (!db || state.busy[id]) return;
+    if (!store || state.busy[id]) return;
     var it = itemById(id);
     var input = document.getElementById("d-" + id);
     if (!it || !input) return;
@@ -704,29 +846,30 @@ button { cursor: pointer; }
     state.busy[id] = true;
     state.editDate = null;
     render();
-    db.doc("items/" + id).update({ seen: true, seenAt: v || null })
+    store.update(id, { seen: true, seenAt: v || null }, "Date : " + it.title + (v ? " vu le " + fmtDate(v) : " sans date"))
       .then(function () { toast(v ? "Date enregistrée : " + fmtDate(v) + "." : "Date retirée."); })
       .catch(handleWriteError)
       .then(function () { delete state.busy[id]; });
   }
 
   function setUnseen(id) {
-    if (!db || state.busy[id]) return;
+    if (!store || state.busy[id]) return;
     var it = itemById(id);
+    if (!it) return;
     state.busy[id] = true;
     state.editDate = null;
     render();
-    db.doc("items/" + id).update({ seen: false, seenAt: null })
-      .then(function () { if (it) toast("« " + it.title + " » remis dans « à voir »."); })
+    store.update(id, { seen: false, seenAt: null }, "À voir : " + it.title)
+      .then(function () { toast("« " + it.title + " » remis dans « à voir »."); })
       .catch(handleWriteError)
       .then(function () { delete state.busy[id]; });
   }
 
   function removeItem(id) {
-    if (!db) return;
-    var it = state.items.filter(function (x) { return x.id === id; })[0];
+    if (!store) return;
+    var it = itemById(id);
     state.confirmDel = null;
-    db.doc("items/" + id).delete()
+    store.remove(id, "Retrait : " + (it ? it.title : id))
       .then(function () { if (it) toast("« " + it.title + " » retiré de la liste."); })
       .catch(handleWriteError);
     render();
@@ -760,7 +903,7 @@ button { cursor: pointer; }
 
   function submitAdd(ev) {
     ev.preventDefault();
-    if (!db) return;
+    if (!store) return;
     var title = $("f-title").value.trim();
     var err = $("form-error");
     if (!title) { err.textContent = "Donne un titre au film ou à la série."; err.hidden = false; $("f-title").focus(); return; }
@@ -780,7 +923,7 @@ button { cursor: pointer; }
       order: maxOrder + 10, seen: false, seenAt: null, addedAt: new Date().toISOString()
     };
     $("submit-add").disabled = true;
-    db.collection("items").doc(id).set(doc)
+    store.add(id, doc, "Ajout : " + title)
       .then(function () {
         closeAdd();
         if (location.hash.slice(1) !== tabId) location.hash = tabId;
@@ -829,36 +972,80 @@ button { cursor: pointer; }
   $("f-tab").addEventListener("change", fillSectionSelect);
   $("add-form").addEventListener("submit", submitAdd);
   $("overlay").addEventListener("click", function (e) { if (e.target === $("overlay")) closeAdd(); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("overlay").hidden) closeAdd(); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+    if (!$("overlay").hidden) closeAdd();
+    if (!$("gh-overlay").hidden) closeGh();
+  });
+
+  /* ---------- Connexion GitHub ---------- */
+  function openGh() {
+    $("gh-form").reset();
+    $("gh-error").hidden = true;
+    $("gh-repo-name").textContent = GH.repo;
+    $("gh-overlay").hidden = false;
+    setTimeout(function () { $("gh-token").focus(); }, 0);
+  }
+  function closeGh() { $("gh-overlay").hidden = true; $("gh-connect").focus(); }
+  function enterGhMode() { store = ghStore(); state.readOnly = false; state.mode = "github"; render(); }
+
+  $("gh-connect").addEventListener("click", function () {
+    if (state.mode === "github") disconnectGh("Déconnecté. La page est de nouveau en lecture seule.");
+    else openGh();
+  });
+  $("gh-cancel").addEventListener("click", closeGh);
+  $("gh-overlay").addEventListener("click", function (e) { if (e.target === $("gh-overlay")) closeGh(); });
+  $("gh-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var t = $("gh-token").value.trim(), err = $("gh-error");
+    if (!t) { err.textContent = "Colle ton jeton dans le champ."; err.hidden = false; return; }
+    setToken(t);
+    $("gh-submit").disabled = true;
+    ghLoad()
+      .then(function () { closeGh(); enterGhMode(); toast("Connecté. Tu peux cocher, changer les dates et ajouter des titres."); })
+      .catch(function (x) {
+        setToken("");
+        err.textContent = x.status === 401 ? "Jeton refusé. Vérifie que tu l'as copié en entier."
+          : x.status === 404 ? "Ce jeton n'a pas accès au dépôt " + GH.repo + "."
+          : "Connexion impossible. Vérifie ta connexion internet et réessaie.";
+        err.hidden = false;
+      })
+      .then(function () { $("gh-submit").disabled = false; });
+  });
 
   /* ---------- Connexion à la base ---------- */
   var slowTimer = null;
   function clearSlow() { if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; } if (state.dbStatus === "slow") state.dbStatus = "ok"; }
   function onListenErr() { clearSlow(); state.dbStatus = "error"; render(); }
 
-  // Hors de claude.ai (ex. GitHub Pages) : on lit la copie data.json, en lecture seule.
-  function loadStatic() {
-    if (typeof fetch !== "function" || location.protocol === "about:") { state.dbStatus = "none"; render(); return; }
+  // Hors de claude.ai (GitHub Pages) : avec un jeton enregistré, on lit et écrit data.json
+  // via l'API GitHub ; sinon on lit la copie publiée, en lecture seule.
+  function loadPublished() {
     fetch("data.json", { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(function (j) {
-        state.tabs = Array.isArray(j.tabs) ? j.tabs : [];
-        state.items = Array.isArray(j.items) ? j.items : [];
-        state.readOnly = true;
-        state.staticDate = j.exportedAt || null;
-        state.loadedTabs = state.loadedItems = true;
-        state.dbStatus = "ok";
-        render();
-      })
-      .catch(function () { state.dbStatus = "none"; render(); });
+      .then(function (j) { state.readOnly = true; state.mode = "static"; applyData(j); })
+      .catch(function () { state.dbStatus = "none"; state.mode = "none"; render(); });
+  }
+  function loadStatic() {
+    if (typeof fetch !== "function" || location.protocol === "about:") { state.dbStatus = "none"; state.mode = "none"; render(); return; }
+    if (getToken()) {
+      ghLoad().then(enterGhMode).catch(function (e) {
+        if (e.status === 401) { setToken(""); toast("Ton jeton GitHub a expiré ou a été supprimé. Reconnecte-toi pour modifier."); }
+        loadPublished();
+      });
+    } else loadPublished();
   }
 
+  state.readOnly = true;
   render();
 
   if (!window.claude || typeof window.claude.use !== "function") { loadStatic(); return; }
   window.claude.use("db").then(function (d) {
     if (!d) { loadStatic(); return; }
     db = d;
+    store = dbStore(d);
+    state.readOnly = false;
+    state.mode = "claude";
     state.dbStatus = "ok";
     slowTimer = setTimeout(function () {
       if (!(state.loadedTabs && state.loadedItems)) { state.dbStatus = "slow"; render(); }
