@@ -235,7 +235,7 @@
       "tab": "marvel-hors-mcu",
       "section": "avant-deadpool-wolverine",
       "note": null,
-      "order": 30,
+      "order": 40,
       "seen": false,
       "seenAt": null
     },
@@ -248,7 +248,7 @@
       "tab": "marvel-hors-mcu",
       "section": "avant-deadpool-wolverine",
       "note": null,
-      "order": 40,
+      "order": 60,
       "seen": true,
       "seenAt": "2026-09-27"
     },
@@ -261,7 +261,7 @@
       "tab": "marvel-hors-mcu",
       "section": "avant-deadpool-wolverine",
       "note": "Rise of the Silver Surfer",
-      "order": 50,
+      "order": 70,
       "seen": false,
       "seenAt": null
     },
@@ -274,7 +274,7 @@
       "tab": "marvel-hors-mcu",
       "section": "avant-deadpool-wolverine",
       "note": null,
-      "order": 60,
+      "order": 30,
       "seen": false,
       "seenAt": null
     },
@@ -287,7 +287,7 @@
       "tab": "marvel-hors-mcu",
       "section": "avant-deadpool-wolverine",
       "note": null,
-      "order": 70,
+      "order": 50,
       "seen": false,
       "seenAt": null
     },
