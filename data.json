@@ -271,8 +271,9 @@
       "section": "avant-deadpool-wolverine",
       "note": "Rise of the Silver Surfer",
       "order": 70,
-      "seen": false,
-      "seenAt": null
+      "seen": true,
+      "seenAt": "2026-11-20",
+      "seenBy": "ArqueftX"
     },
     {
       "id": "daredevil-2003",
