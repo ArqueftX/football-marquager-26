@@ -521,6 +521,22 @@
       "addedAt": "2026-11-20T23:17:45.386Z",
       "updatedAt": "2026-11-20T23:17:45.386Z",
       "addedBy": "ReoZ"
+    },
+    {
+      "id": "cloudy-with-a-chance-of-meatballs-2-mwplo1n0",
+      "title": "Cloudy with a Chance of Meatballs 2",
+      "kind": "film",
+      "year": 2013,
+      "by": "Kris Pearn, Cody Cameron",
+      "tab": "autre",
+      "section": null,
+      "note": null,
+      "order": 60,
+      "seen": false,
+      "seenAt": null,
+      "addedAt": "2026-11-20T23:18:13.068Z",
+      "updatedAt": "2026-11-20T23:18:13.068Z",
+      "addedBy": "ReoZ"
     }
   ]
 }
