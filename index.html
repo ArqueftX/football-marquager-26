@@ -127,6 +127,14 @@ button { cursor: pointer; }
 }
 .stamp small { font-family: var(--mono); font-weight: 400; font-size: 10px; letter-spacing: .04em; text-transform: none; }
 .stamp:hover { background: color-mix(in oklab, var(--seen) 12%, transparent); }
+.stamp.together { border-color: var(--finito); color: var(--finito); font-size: 15px; }
+.stamp.together:hover { background: color-mix(in oklab, var(--finito) 12%, transparent); }
+.choose { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.btn-seen.together { background: var(--finito); border-color: var(--finito); color: #14120a; font-weight: 600; }
+.btn-seen.together:hover { background: color-mix(in oklab, var(--finito) 85%, #fff); }
+.date-edit .chk { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink); cursor: pointer; }
+.date-edit .chk input { accent-color: var(--finito); width: 16px; height: 16px; }
+.tag-together { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--finito); white-space: nowrap; }
 .btn-x {
   border: 0; background: transparent; color: var(--muted); width: 32px; height: 32px; border-radius: 8px;
   display: grid; place-items: center;
@@ -224,6 +232,8 @@ button { cursor: pointer; }
 .next-card .from:hover { text-decoration: underline; }
 .next-card h3 { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
 .next-card .btn-seen { justify-self: start; margin-top: 6px; }
+.next-card .choose { margin-top: 6px; }
+.next-card .choose .btn-seen { margin-top: 0; }
 .next-card.done { border-top-color: var(--seen); }
 .next-card.done p { margin: 0; color: var(--muted); font-size: 13.5px; }
 .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
@@ -378,6 +388,7 @@ button { cursor: pointer; }
     readOnly: false,
     confirmDel: null,
     editDate: null,
+    choose: null,
     busy: {}
   };
   var db = null;
@@ -508,15 +519,37 @@ button { cursor: pointer; }
     return '<div class="date-edit">' +
       '<label class="lbl" for="' + esc(fid) + '">Vu le</label>' +
       '<input type="date" id="' + esc(fid) + '" value="' + esc(dayOf(it.seenAt)) + '" max="' + todayStr() + '">' +
+      '<label class="chk" for="t-' + esc(it.id) + '"><input type="checkbox" id="t-' + esc(it.id) + '"' + (it.together ? ' checked' : '') + '>Vu ensemble</label>' +
       '<button type="button" class="save" data-act="date-save" data-id="' + esc(it.id) + '">Enregistrer</button>' +
       '<button type="button" data-act="date-cancel">Annuler</button>' +
       '<button type="button" class="unseen" data-act="unseen" data-id="' + esc(it.id) + '">Remettre à voir</button>' +
       '</div>';
   }
 
+  // Dernière modification connue d'un titre (pour départager deux visionnages du même jour)
+  function lastTouch(it) {
+    return [it.updatedAt, it.seenTs, it.addedAt].filter(Boolean).map(String).sort().pop() || "";
+  }
+  function nowIso() { return new Date().toISOString(); }
+
+  // Choix « Vu ensemble » / « Vu en solo » qui remplace le bouton « Marquer vu »
+  function seenButtonHTML(it) {
+    if (state.choose === it.id) {
+      return '<div class="choose">' +
+        '<button type="button" class="btn-seen together" data-act="seen-together" data-id="' + esc(it.id) + '">Vu ensemble</button>' +
+        '<button type="button" class="btn-seen" data-act="seen-solo" data-id="' + esc(it.id) + '">Vu en solo</button>' +
+        '<button type="button" class="btn-x" data-act="choose-no" aria-label="Annuler">' +
+        '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>' +
+        '</div>';
+    }
+    return '<button type="button" class="btn-seen" data-act="choose" data-id="' + esc(it.id) + '">Marquer vu</button>';
+  }
+
   function whoHTML(it) {
     var parts = [];
-    if (it.seen && it.seenBy) parts.push('Coché par <b>' + esc(it.seenBy) + '</b>');
+    if (it.seen && it.together === true) parts.push('Vu ensemble' + (it.seenBy ? ' · coché par <b>' + esc(it.seenBy) + '</b>' : ''));
+    else if (it.seen && it.together === false) parts.push('Vu en solo' + (it.seenBy ? ' par <b>' + esc(it.seenBy) + '</b>' : ''));
+    else if (it.seen && it.seenBy) parts.push('Coché par <b>' + esc(it.seenBy) + '</b>');
     if (it.addedBy) parts.push('Ajouté par <b>' + esc(it.addedBy) + '</b>');
     return parts.length ? '<p class="who">' + parts.join(' · ') + '</p>' : '';
   }
@@ -524,21 +557,22 @@ button { cursor: pointer; }
   function ticketHTML(it, n, isNext, acc) {
     var meta = [it.kind === "serie" ? "Série" : "Film", it.year, it.by].filter(Boolean).map(esc).join(" · ");
     var editing = !state.readOnly && it.seen && state.editDate === it.id;
-    var stampInner = 'Vu' + (it.seenAt ? '<small>' + esc(fmtDate(it.seenAt)) + '</small>' : '<small>date ?</small>');
+    var stampInner = (it.together ? 'Vu ensemble' : 'Vu') + (it.seenAt ? '<small>' + esc(fmtDate(it.seenAt)) + '</small>' : '<small>date ?</small>');
+    var stampCls = 'stamp' + (it.together ? ' together' : '');
     var act;
     if (state.confirmDel === it.id) {
       act = '<div class="confirm"><span>Retirer ?</span>' +
         '<button type="button" class="yes" data-act="del-yes" data-id="' + esc(it.id) + '">Oui</button>' +
         '<button type="button" data-act="del-no">Non</button></div>';
     } else if (state.readOnly) {
-      act = it.seen ? '<span class="stamp">' + stampInner + '</span>' : "";
+      act = it.seen ? '<span class="' + stampCls + '">' + stampInner + '</span>' : "";
     } else {
       var main = it.seen
-        ? '<button type="button" class="stamp" data-act="date-open" data-id="' + esc(it.id) + '" title="Modifier la date ou remettre à voir">' + stampInner + '</button>'
-        : '<button type="button" class="btn-seen" data-act="toggle" data-id="' + esc(it.id) + '">Marquer vu</button>';
+        ? '<button type="button" class="' + stampCls + '" data-act="date-open" data-id="' + esc(it.id) + '" title="Modifier la date ou remettre à voir">' + stampInner + '</button>'
+        : seenButtonHTML(it);
       var del = '<button type="button" class="btn-x" data-act="del" data-id="' + esc(it.id) + '" aria-label="Retirer ' + esc(it.title) + ' de la liste">' +
         '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>';
-      act = main + del;
+      act = main + (state.choose === it.id ? '' : del);
     }
     return '<article class="ticket' + (it.seen ? " is-seen" : "") + (isNext ? " is-next" : "") + (editing ? " has-editor" : "") + '" style="--acc:' + acc + '">' +
       '<div class="stub"><span class="num">' + pad(n) + '</span><span class="kind">' + (it.kind === "serie" ? "Série" : "Film") + '</span></div>' +
@@ -586,7 +620,7 @@ button { cursor: pointer; }
           '<h3>' + esc(it.title) + '</h3>' +
           '<p class="meta">' + meta + '</p>' +
           (it.note ? '<p class="note">' + esc(it.note) + '</p>' : '') +
-          (state.readOnly ? '' : '<button type="button" class="btn-seen" data-act="toggle" data-id="' + esc(it.id) + '">Marquer vu</button>') +
+          (state.readOnly ? '' : seenButtonHTML(it)) +
           '</article>';
       });
       html += '</div>';
@@ -610,8 +644,11 @@ button { cursor: pointer; }
     // Journal des visionnages
     var seen = state.items.filter(function (i) { return i.seen; });
     var dated = seen.filter(function (i) { return dayOf(i.seenAt); })
-      .sort(function (a, b) { return dayOf(b.seenAt).localeCompare(dayOf(a.seenAt)); });
-    var undated = seen.filter(function (i) { return !dayOf(i.seenAt); });
+      .sort(function (a, b) {
+        return dayOf(b.seenAt).localeCompare(dayOf(a.seenAt)) || lastTouch(b).localeCompare(lastTouch(a));
+      });
+    var undated = seen.filter(function (i) { return !dayOf(i.seenAt); })
+      .sort(function (a, b) { return lastTouch(b).localeCompare(lastTouch(a)); });
     html += '<section class="home-block"><header><h2>Journal des visionnages</h2><span>' + seen.length + ' vu' + (seen.length > 1 ? 's' : '') + '</span></header>';
     if (!seen.length) {
       html += '<div class="empty">Rien de vu pour l\'instant.</div>';
@@ -626,7 +663,8 @@ button { cursor: pointer; }
           '<span class="tl-main"><strong>' + esc(it.title) + '</strong>' +
           (it.year ? '<span class="meta">' + esc(it.year) + '</span>' : '') +
           (t ? '<span class="chip">' + esc(t.name) + '</span>' : '') +
-          (it.seenBy ? '<span class="who">par <b>' + esc(it.seenBy) + '</b></span>' : '') + '</span>' +
+          (it.together === true ? '<span class="tag-together">ensemble</span>' : it.together === false ? '<span class="who">en solo</span>' : '') +
+          (it.seenBy ? '<span class="who">' + (it.together ? 'coché ' : '') + 'par <b>' + esc(it.seenBy) + '</b></span>' : '') + '</span>' +
           '<span class="tl-act">' + (state.readOnly || editing ? '' :
             '<button type="button" class="btn-edit" data-act="date-open" data-id="' + esc(it.id) + '" aria-label="Modifier la date de ' + esc(it.title) + '">' + PENCIL + '<span>Date</span></button>') + '</span>' +
           (editing ? dateEditorHTML(it) : '') +
@@ -863,15 +901,19 @@ button { cursor: pointer; }
     }
   }
 
-  function toggleSeen(id) {
+  function toggleSeen(id, together) {
     if (!store || state.busy[id]) return;
     var it = itemById(id);
     if (!it) return;
     state.busy[id] = true;
     var nowSeen = !it.seen;
     if (needName()) { delete state.busy[id]; return; }
-    store.update(id, { seen: nowSeen, seenAt: nowSeen ? todayStr() : null, seenBy: nowSeen ? (getName() || null) : null }, by((nowSeen ? "Vu : " : "À voir : ") + it.title))
-      .then(function () { if (nowSeen) toast("« " + it.title + " » vu aujourd'hui. Clique sur le tampon pour changer la date."); })
+    state.choose = null;
+    var fields = { seen: nowSeen, seenAt: nowSeen ? todayStr() : null, seenBy: nowSeen ? (getName() || null) : null,
+      together: nowSeen ? !!together : null, updatedAt: nowIso() };
+    render();
+    store.update(id, fields, by((nowSeen ? (together ? "Vu ensemble : " : "Vu en solo : ") : "À voir : ") + it.title))
+      .then(function () { if (nowSeen) toast("« " + it.title + " » " + (together ? "vu ensemble" : "vu en solo") + " aujourd'hui. Clique sur le tampon pour changer la date."); })
       .catch(handleWriteError)
       .then(function () { delete state.busy[id]; });
   }
@@ -887,9 +929,11 @@ button { cursor: pointer; }
     state.busy[id] = true;
     state.editDate = null;
     render();
-    var fields = { seen: true, seenAt: v || null };
+    var chk = document.getElementById("t-" + id);
+    var together = chk ? chk.checked : !!it.together;
+    var fields = { seen: true, seenAt: v || null, together: together, updatedAt: nowIso() };
     if (!it.seenBy && getName()) fields.seenBy = getName();
-    store.update(id, fields, by("Date : " + it.title + (v ? " vu le " + fmtDate(v) : " sans date")))
+    store.update(id, fields, by("Date : " + it.title + (together ? " vu ensemble" : " vu en solo") + (v ? " le " + fmtDate(v) : ", sans date")))
       .then(function () { toast(v ? "Date enregistrée : " + fmtDate(v) + "." : "Date retirée."); })
       .catch(handleWriteError)
       .then(function () { delete state.busy[id]; });
@@ -902,7 +946,7 @@ button { cursor: pointer; }
     state.busy[id] = true;
     state.editDate = null;
     render();
-    store.update(id, { seen: false, seenAt: null, seenBy: null }, by("À voir : " + it.title))
+    store.update(id, { seen: false, seenAt: null, seenBy: null, together: null, updatedAt: nowIso() }, by("À voir : " + it.title))
       .then(function () { toast("« " + it.title + " » remis dans « à voir »."); })
       .catch(handleWriteError)
       .then(function () { delete state.busy[id]; });
@@ -964,7 +1008,7 @@ button { cursor: pointer; }
     var doc = {
       title: title, kind: kind, year: year, by: $("f-by").value.trim() || null,
       tab: tabId, section: section || null, note: $("f-note").value.trim() || null,
-      order: maxOrder + 10, seen: false, seenAt: null, addedAt: new Date().toISOString(),
+      order: maxOrder + 10, seen: false, seenAt: null, addedAt: nowIso(), updatedAt: nowIso(),
       addedBy: getName() || null
     };
     $("submit-add").disabled = true;
@@ -980,7 +1024,7 @@ button { cursor: pointer; }
 
   /* ---------- Événements ---------- */
   function goTo(id) {
-    state.confirmDel = null; state.editDate = null;
+    state.confirmDel = null; state.editDate = null; state.choose = null;
     if ((location.hash || "").slice(1) === id) render(); else location.hash = id;
   }
   $("tabs").addEventListener("click", function (e) {
@@ -999,7 +1043,7 @@ button { cursor: pointer; }
     if (!b || state.readOnly) return;
     var act = b.getAttribute("data-act"), id = b.getAttribute("data-id");
     if (act === "date-open") {
-      state.editDate = id; state.confirmDel = null; render();
+      state.editDate = id; state.confirmDel = null; state.choose = null; render();
       var inp = document.getElementById("d-" + id);
       if (inp) inp.focus();
     }
@@ -1007,6 +1051,10 @@ button { cursor: pointer; }
     else if (act === "date-save") saveDate(id);
     else if (act === "unseen") setUnseen(id);
     else if (act === "toggle") toggleSeen(id);
+    else if (act === "choose") { state.choose = id; state.confirmDel = null; state.editDate = null; render(); }
+    else if (act === "choose-no") { state.choose = null; render(); }
+    else if (act === "seen-together") toggleSeen(id, true);
+    else if (act === "seen-solo") toggleSeen(id, false);
     else if (act === "del") { state.confirmDel = id; render(); }
     else if (act === "del-no") { state.confirmDel = null; render(); }
     else if (act === "del-yes") removeItem(id);
