@@ -370,6 +370,20 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-20T20:15:00Z"
+    },
+    {
+      "id": "man-of-steel",
+      "title": "Man of Steel",
+      "kind": "film",
+      "year": 2013,
+      "by": "Zack Snyder",
+      "tab": "autre",
+      "section": null,
+      "note": "Premier film du DCEU, avec Henry Cavill",
+      "order": 20,
+      "seen": false,
+      "seenAt": null,
+      "addedAt": "2026-11-20T20:16:00Z"
     }
   ]
 }
