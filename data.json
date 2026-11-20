@@ -569,6 +569,22 @@
       "addedAt": "2026-11-20T23:45:00.102Z",
       "updatedAt": "2026-11-20T23:45:00.102Z",
       "addedBy": "ArqueftX"
+    },
+    {
+      "id": "the-thing-mwpmrw0y",
+      "title": "The Thing",
+      "kind": "film",
+      "year": 1982,
+      "by": "John Carpenter",
+      "tab": "autre",
+      "section": null,
+      "note": null,
+      "order": 80,
+      "seen": false,
+      "seenAt": null,
+      "addedAt": "2026-11-20T23:49:12.034Z",
+      "updatedAt": "2026-11-20T23:49:12.034Z",
+      "addedBy": "ArqueftX"
     }
   ]
 }
