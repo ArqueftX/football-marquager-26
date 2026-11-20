@@ -116,7 +116,10 @@
       "note": null,
       "order": 10,
       "seen": true,
-      "seenAt": "2025-08-18"
+      "seenAt": "2025-08-18",
+      "together": false,
+      "updatedAt": "2026-11-20T21:01:22.827Z",
+      "seenBy": "ArqueftX"
     },
     {
       "id": "creature-commandos",
