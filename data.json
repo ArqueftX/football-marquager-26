@@ -356,6 +356,20 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-20T20:12:00Z"
+    },
+    {
+      "id": "the-amazing-bulk",
+      "title": "The Amazing Bulk",
+      "kind": "film",
+      "year": 2010,
+      "by": "Lewis Schoenbrun",
+      "tab": "autre",
+      "section": null,
+      "note": "Parodie fauchée de Hulk, tournée sur fond vert",
+      "order": 10,
+      "seen": false,
+      "seenAt": null,
+      "addedAt": "2026-11-20T20:15:00Z"
     }
   ]
 }
