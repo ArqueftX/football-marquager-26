@@ -180,7 +180,10 @@ button { cursor: pointer; }
 .form-error { color: var(--danger); font-size: 13.5px; margin: 0; }
 .top-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .top-actions .btn-ghost { font-size: 14px; }
-.gh-state { font-family: var(--mono); font-size: 12px; color: var(--finito); letter-spacing: .04em; }
+.gh-state { font-family: var(--mono); font-size: 12px; color: var(--finito); letter-spacing: .04em; background: none; border: 0; padding: 6px 4px; border-radius: 6px; }
+.gh-state:hover { text-decoration: underline; }
+.who { margin: 2px 0 0; font-family: var(--mono); font-size: 11.5px; color: var(--muted); letter-spacing: .02em; }
+.who b { color: var(--ink); font-weight: 500; }
 .sheet-intro { margin: 0; color: var(--muted); font-size: 14px; }
 
 .toast {
@@ -278,7 +281,7 @@ button { cursor: pointer; }
       <p id="tally" class="tally">Chargement de la liste…</p>
     </div>
     <div class="top-actions">
-      <span class="gh-state" id="gh-state" hidden>Mode édition</span>
+      <button type="button" class="gh-state" id="gh-state" title="Changer de prénom" hidden>Mode édition</button>
       <button class="btn-ghost" id="gh-connect" type="button" hidden>Se connecter pour modifier</button>
       <button class="btn-add" id="open-add" type="button">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -345,8 +348,12 @@ button { cursor: pointer; }
 <div class="overlay" id="gh-overlay" hidden>
   <form class="sheet" id="gh-form" role="dialog" aria-modal="true" aria-labelledby="gh-title" novalidate>
     <h2 id="gh-title">Modifier la liste</h2>
-    <p class="sheet-intro">Colle ton jeton GitHub pour cocher les visionnages, changer les dates et ajouter des titres. Il reste enregistré dans ce navigateur, nulle part ailleurs.</p>
+    <p class="sheet-intro" id="gh-intro">Indique ton prénom et colle ton jeton GitHub pour cocher les visionnages, changer les dates et ajouter des titres. Ton prénom s'affichera sur ce que tu coches et ajoutes. Le jeton reste enregistré dans ce navigateur, nulle part ailleurs.</p>
     <div class="field">
+      <label for="gh-name">Ton prénom</label>
+      <input id="gh-name" type="text" autocomplete="given-name" maxlength="30" placeholder="Ex. Nolan">
+    </div>
+    <div class="field" id="gh-token-wrap">
       <label for="gh-token">Jeton GitHub</label>
       <input id="gh-token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
     </div>
@@ -507,6 +514,13 @@ button { cursor: pointer; }
       '</div>';
   }
 
+  function whoHTML(it) {
+    var parts = [];
+    if (it.seen && it.seenBy) parts.push('Coché par <b>' + esc(it.seenBy) + '</b>');
+    if (it.addedBy) parts.push('Ajouté par <b>' + esc(it.addedBy) + '</b>');
+    return parts.length ? '<p class="who">' + parts.join(' · ') + '</p>' : '';
+  }
+
   function ticketHTML(it, n, isNext, acc) {
     var meta = [it.kind === "serie" ? "Série" : "Film", it.year, it.by].filter(Boolean).map(esc).join(" · ");
     var editing = !state.readOnly && it.seen && state.editDate === it.id;
@@ -532,6 +546,7 @@ button { cursor: pointer; }
       '<h4>' + esc(it.title) + '</h4>' +
       '<p class="meta">' + meta + '</p>' +
       (it.note ? '<p class="note">' + esc(it.note) + '</p>' : '') +
+      whoHTML(it) +
       '</div>' +
       '<div class="act">' + act + '</div>' +
       (editing ? dateEditorHTML(it) : '') +
@@ -610,7 +625,8 @@ button { cursor: pointer; }
           '<span class="tl-date">' + (dayOf(it.seenAt) ? esc(fmtDate(it.seenAt)) : 'sans date') + '</span>' +
           '<span class="tl-main"><strong>' + esc(it.title) + '</strong>' +
           (it.year ? '<span class="meta">' + esc(it.year) + '</span>' : '') +
-          (t ? '<span class="chip">' + esc(t.name) + '</span>' : '') + '</span>' +
+          (t ? '<span class="chip">' + esc(t.name) + '</span>' : '') +
+          (it.seenBy ? '<span class="who">par <b>' + esc(it.seenBy) + '</b></span>' : '') + '</span>' +
           '<span class="tl-act">' + (state.readOnly || editing ? '' :
             '<button type="button" class="btn-edit" data-act="date-open" data-id="' + esc(it.id) + '" aria-label="Modifier la date de ' + esc(it.title) + '">' + PENCIL + '<span>Date</span></button>') + '</span>' +
           (editing ? dateEditorHTML(it) : '') +
@@ -697,6 +713,7 @@ button { cursor: pointer; }
     $("gh-connect").hidden = !ghPossible;
     $("gh-connect").textContent = state.mode === "github" ? "Se déconnecter" : "Se connecter pour modifier";
     $("gh-state").hidden = state.mode !== "github";
+    $("gh-state").textContent = getName() ? "Mode édition · " + getName() : "Mode édition · prénom ?";
   }
 
   /* ---------- Écritures ---------- */
@@ -718,6 +735,18 @@ button { cursor: pointer; }
   var TOKEN_KEY = "wpf-gh-token";
   function getToken() { try { return localStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; } }
   function setToken(t) { try { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
+  var NAME_KEY = "wpf-name";
+  function cleanName(n) { return String(n || "").replace(/\s+/g, " ").trim().slice(0, 30); }
+  function getName() { try { return cleanName(localStorage.getItem(NAME_KEY)); } catch (e) { return ""; } }
+  function setName(n) { try { if (n) localStorage.setItem(NAME_KEY, n); else localStorage.removeItem(NAME_KEY); } catch (e) {} }
+  // Prénom de la personne qui modifie. Sans prénom, on le demande avant d'enregistrer.
+  function needName() {
+    if (state.mode !== "github" || getName()) return false;
+    openGh(true);
+    toast("Indique d'abord ton prénom pour qu'on sache qui a fait quoi.");
+    return true;
+  }
+  function by(msg) { var n = getName(); return n ? msg + " (par " + n + ")" : msg; }
   function b64encode(s) { return btoa(unescape(encodeURIComponent(s))); }
   function b64decode(s) { return decodeURIComponent(escape(atob(String(s).replace(/\s/g, "")))); }
 
@@ -820,7 +849,8 @@ button { cursor: pointer; }
     if (!it) return;
     state.busy[id] = true;
     var nowSeen = !it.seen;
-    store.update(id, { seen: nowSeen, seenAt: nowSeen ? todayStr() : null }, (nowSeen ? "Vu : " : "À voir : ") + it.title)
+    if (needName()) { delete state.busy[id]; return; }
+    store.update(id, { seen: nowSeen, seenAt: nowSeen ? todayStr() : null, seenBy: nowSeen ? (getName() || null) : null }, by((nowSeen ? "Vu : " : "À voir : ") + it.title))
       .then(function () { if (nowSeen) toast("« " + it.title + " » vu aujourd'hui. Clique sur le tampon pour changer la date."); })
       .catch(handleWriteError)
       .then(function () { delete state.busy[id]; });
@@ -833,10 +863,13 @@ button { cursor: pointer; }
     if (!it || !input) return;
     var v = input.value;
     if (v && !/^\d{4}-\d{2}-\d{2}$/.test(v)) { toast("Date invalide. Choisis-la dans le calendrier."); return; }
+    if (needName()) return;
     state.busy[id] = true;
     state.editDate = null;
     render();
-    store.update(id, { seen: true, seenAt: v || null }, "Date : " + it.title + (v ? " vu le " + fmtDate(v) : " sans date"))
+    var fields = { seen: true, seenAt: v || null };
+    if (!it.seenBy && getName()) fields.seenBy = getName();
+    store.update(id, fields, by("Date : " + it.title + (v ? " vu le " + fmtDate(v) : " sans date")))
       .then(function () { toast(v ? "Date enregistrée : " + fmtDate(v) + "." : "Date retirée."); })
       .catch(handleWriteError)
       .then(function () { delete state.busy[id]; });
@@ -845,21 +878,21 @@ button { cursor: pointer; }
   function setUnseen(id) {
     if (!store || state.busy[id]) return;
     var it = itemById(id);
-    if (!it) return;
+    if (!it || needName()) return;
     state.busy[id] = true;
     state.editDate = null;
     render();
-    store.update(id, { seen: false, seenAt: null }, "À voir : " + it.title)
+    store.update(id, { seen: false, seenAt: null, seenBy: null }, by("À voir : " + it.title))
       .then(function () { toast("« " + it.title + " » remis dans « à voir »."); })
       .catch(handleWriteError)
       .then(function () { delete state.busy[id]; });
   }
 
   function removeItem(id) {
-    if (!store) return;
+    if (!store || needName()) return;
     var it = itemById(id);
     state.confirmDel = null;
-    store.remove(id, "Retrait : " + (it ? it.title : id))
+    store.remove(id, by("Retrait : " + (it ? it.title : id)))
       .then(function () { if (it) toast("« " + it.title + " » retiré de la liste."); })
       .catch(handleWriteError);
     render();
@@ -894,6 +927,7 @@ button { cursor: pointer; }
   function submitAdd(ev) {
     ev.preventDefault();
     if (!store) return;
+    if (needName()) { closeAdd(); return; }
     var title = $("f-title").value.trim();
     var err = $("form-error");
     if (!title) { err.textContent = "Donne un titre au film ou à la série."; err.hidden = false; $("f-title").focus(); return; }
@@ -910,10 +944,11 @@ button { cursor: pointer; }
     var doc = {
       title: title, kind: kind, year: year, by: $("f-by").value.trim() || null,
       tab: tabId, section: section || null, note: $("f-note").value.trim() || null,
-      order: maxOrder + 10, seen: false, seenAt: null, addedAt: new Date().toISOString()
+      order: maxOrder + 10, seen: false, seenAt: null, addedAt: new Date().toISOString(),
+      addedBy: getName() || null
     };
     $("submit-add").disabled = true;
-    store.add(id, doc, "Ajout : " + title)
+    store.add(id, doc, by("Ajout : " + title))
       .then(function () {
         closeAdd();
         if (location.hash.slice(1) !== tabId) location.hash = tabId;
@@ -969,11 +1004,20 @@ button { cursor: pointer; }
   });
 
   /* ---------- Connexion GitHub ---------- */
-  function openGh() {
+  var ghNameOnly = false;
+  function openGh(nameOnly) {
+    ghNameOnly = !!nameOnly;
     $("gh-form").reset();
+    $("gh-name").value = getName();
+    $("gh-token-wrap").hidden = ghNameOnly;
+    $("gh-title").textContent = ghNameOnly ? "Ton prénom" : "Modifier la liste";
+    $("gh-intro").textContent = ghNameOnly
+      ? "Il s'affichera sur ce que tu coches et ajoutes depuis ce navigateur."
+      : "Indique ton prénom et colle ton jeton GitHub pour cocher les visionnages, changer les dates et ajouter des titres. Ton prénom s'affichera sur ce que tu coches et ajoutes. Le jeton reste enregistré dans ce navigateur, nulle part ailleurs.";
+    $("gh-submit").textContent = ghNameOnly ? "Enregistrer" : "Se connecter";
     $("gh-error").hidden = true;
     $("gh-overlay").hidden = false;
-    setTimeout(function () { $("gh-token").focus(); }, 0);
+    setTimeout(function () { (ghNameOnly || !$("gh-name").value ? $("gh-name") : $("gh-token")).focus(); }, 0);
   }
   function closeGh() { $("gh-overlay").hidden = true; $("gh-connect").focus(); }
   function enterGhMode() { store = ghStore(); state.readOnly = false; state.mode = "github"; render(); }
@@ -983,15 +1027,24 @@ button { cursor: pointer; }
     else openGh();
   });
   $("gh-cancel").addEventListener("click", closeGh);
+  $("gh-state").addEventListener("click", function () { openGh(true); });
   $("gh-overlay").addEventListener("click", function (e) { if (e.target === $("gh-overlay")) closeGh(); });
   $("gh-form").addEventListener("submit", function (e) {
     e.preventDefault();
-    var t = $("gh-token").value.trim(), err = $("gh-error");
-    if (!t) { err.textContent = "Colle ton jeton dans le champ."; err.hidden = false; return; }
+    var name = cleanName($("gh-name").value), err = $("gh-error");
+    if (!name) { err.textContent = "Indique ton prénom."; err.hidden = false; $("gh-name").focus(); return; }
+    if (ghNameOnly) {
+      setName(name); closeGh(); render();
+      toast("C'est noté, " + name + ".");
+      return;
+    }
+    var t = $("gh-token").value.trim();
+    if (!t) { err.textContent = "Colle ton jeton dans le champ."; err.hidden = false; $("gh-token").focus(); return; }
+    setName(name);
     setToken(t);
     $("gh-submit").disabled = true;
     ghLoad()
-      .then(function () { closeGh(); enterGhMode(); toast("Connecté. Tu peux cocher, changer les dates et ajouter des titres."); })
+      .then(function () { closeGh(); enterGhMode(); toast("Salut " + name + ", tu peux cocher, changer les dates et ajouter des titres."); })
       .catch(function (x) {
         setToken("");
         err.textContent = x.status === 401 ? "Jeton refusé. Vérifie que tu l'as copié en entier."
