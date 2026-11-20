@@ -553,6 +553,22 @@
       "addedAt": "2026-11-20T23:18:21.516Z",
       "updatedAt": "2026-11-20T23:18:21.516Z",
       "addedBy": "ArqueftX"
+    },
+    {
+      "id": "the-substance-mwpmmhmu",
+      "title": "The Substance",
+      "kind": "film",
+      "year": 2024,
+      "by": "Coralie Fargeat",
+      "tab": "autre",
+      "section": null,
+      "note": null,
+      "order": 70,
+      "seen": false,
+      "seenAt": null,
+      "addedAt": "2026-11-20T23:45:00.102Z",
+      "updatedAt": "2026-11-20T23:45:00.102Z",
+      "addedBy": "ArqueftX"
     }
   ]
 }
