@@ -77,7 +77,10 @@
       "note": "Film de juin, juillet & août 2026",
       "order": 10,
       "seen": true,
-      "seenAt": "2026-08-24"
+      "seenAt": "2026-08-24",
+      "together": true,
+      "updatedAt": "2026-11-20T21:09:24.709Z",
+      "seenBy": "ArqueftX"
     },
     {
       "id": "zodiac",
