@@ -93,7 +93,10 @@
       "note": "Film de septembre 2026",
       "order": 20,
       "seen": true,
-      "seenAt": "2026-09-13"
+      "seenAt": "2026-09-13",
+      "together": false,
+      "updatedAt": "2026-11-20T21:09:26.699Z",
+      "seenBy": "ArqueftX"
     },
     {
       "id": "fruitvale-station",
