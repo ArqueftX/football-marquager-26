@@ -288,8 +288,8 @@
       "section": "avant-deadpool-wolverine",
       "note": null,
       "order": 50,
-      "seen": false,
-      "seenAt": null
+      "seen": true,
+      "seenAt": "2026-11-20"
     },
     {
       "id": "hulk-2003",
