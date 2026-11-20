@@ -182,9 +182,6 @@ button { cursor: pointer; }
 .top-actions .btn-ghost { font-size: 14px; }
 .gh-state { font-family: var(--mono); font-size: 12px; color: var(--finito); letter-spacing: .04em; }
 .sheet-intro { margin: 0; color: var(--muted); font-size: 14px; }
-.steps { margin: 0; padding-left: 20px; display: grid; gap: 6px; color: var(--muted); font-size: 14px; }
-.steps b { color: var(--ink); font-weight: 600; }
-.steps a { color: var(--finito); }
 
 .toast {
   position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--bg);
@@ -349,13 +346,6 @@ button { cursor: pointer; }
   <form class="sheet" id="gh-form" role="dialog" aria-modal="true" aria-labelledby="gh-title" novalidate>
     <h2 id="gh-title">Modifier la liste</h2>
     <p class="sheet-intro">Colle ton jeton GitHub pour cocher les visionnages, changer les dates et ajouter des titres. Il reste enregistré dans ce navigateur, nulle part ailleurs.</p>
-    <ol class="steps">
-      <li>Ouvre <a href="https://github.com/settings/personal-access-tokens/new?name=Watchparty&amp;description=Cocher%20les%20films%20sur%20la%20Watchparty&amp;contents=write" target="_blank" rel="noopener">la page de création de jeton</a>, connecté à ton compte GitHub. Le nom et la permission <b>Contents</b> sont déjà remplis.</li>
-      <li>Choisis une date d'expiration.</li>
-      <li><b>Repository access</b> : « Only select repositories », puis <b id="gh-repo-name">football-marquager-26</b>.</li>
-      <li>Dans <b>Permissions</b>, vérifie que <b>Contents</b> apparaît avec « Read and write ». Sinon : <b>Add permissions</b>, tape « Contents », coche-le, puis choisis « Read and write » à côté.</li>
-      <li>Clique sur <b>Generate token</b>, copie le jeton et colle-le ci-dessous.</li>
-    </ol>
     <div class="field">
       <label for="gh-token">Jeton GitHub</label>
       <input id="gh-token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
@@ -982,7 +972,6 @@ button { cursor: pointer; }
   function openGh() {
     $("gh-form").reset();
     $("gh-error").hidden = true;
-    $("gh-repo-name").textContent = GH.repo;
     $("gh-overlay").hidden = false;
     setTimeout(function () { $("gh-token").focus(); }, 0);
   }
