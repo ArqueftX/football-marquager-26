@@ -287,7 +287,10 @@
       "note": null,
       "order": 60,
       "seen": true,
-      "seenAt": "2026-09-27"
+      "seenAt": "2026-09-27",
+      "together": true,
+      "updatedAt": "2026-11-20T21:10:49.895Z",
+      "seenBy": "ArqueftX"
     },
     {
       "id": "4-fantastiques-surfer",
