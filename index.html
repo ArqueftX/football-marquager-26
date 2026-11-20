@@ -735,6 +735,8 @@ button { cursor: pointer; }
     // Garde la date en cours de saisie si un autre appareil met la liste à jour
     var open = state.editDate ? document.getElementById("d-" + state.editDate) : null;
     var typed = open ? open.value : null, hadFocus = open && document.activeElement === open;
+    var openChk = state.editDate ? document.getElementById("t-" + state.editDate) : null;
+    var ticked = openChk ? openChk.checked : null;
     if (state.editDate) {
       var ed = itemById(state.editDate);
       if (!ed || !ed.seen) state.editDate = null;
@@ -745,6 +747,10 @@ button { cursor: pointer; }
     if (typed !== null && state.editDate) {
       var again = document.getElementById("d-" + state.editDate);
       if (again) { again.value = typed; if (hadFocus) again.focus(); }
+    }
+    if (ticked !== null && state.editDate) {
+      var chkAgain = document.getElementById("t-" + state.editDate);
+      if (chkAgain) chkAgain.checked = ticked;
     }
     $("open-add").hidden = state.readOnly || state.dbStatus === "none";
     var ghPossible = (state.mode === "static" || state.mode === "github") && state.dbStatus === "ok";
@@ -925,12 +931,13 @@ button { cursor: pointer; }
     if (!it || !input) return;
     var v = input.value;
     if (v && !/^\d{4}-\d{2}-\d{2}$/.test(v)) { toast("Date invalide. Choisis-la dans le calendrier."); return; }
+    // Lire la case « Vu ensemble » avant de refermer l'éditeur (le rendu la supprime)
+    var chk = document.getElementById("t-" + id);
+    var together = chk ? chk.checked : !!it.together;
     if (needName()) return;
     state.busy[id] = true;
     state.editDate = null;
     render();
-    var chk = document.getElementById("t-" + id);
-    var together = chk ? chk.checked : !!it.together;
     var fields = { seen: true, seenAt: v || null, together: together, updatedAt: nowIso() };
     if (!it.seenBy && getName()) fields.seenBy = getName();
     store.update(id, fields, by("Date : " + it.title + (together ? " vu ensemble" : " vu en solo") + (v ? " le " + fmtDate(v) : ", sans date")))
