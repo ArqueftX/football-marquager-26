@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-11-05",
+  "exportedAt": "2026-11-20",
   "tabs": [
     {
       "id": "films-du-mois",
@@ -223,8 +223,8 @@
       "section": "avant-deadpool-wolverine",
       "note": null,
       "order": 20,
-      "seen": false,
-      "seenAt": null
+      "seen": true,
+      "seenAt": "2026-11-20"
     },
     {
       "id": "blade-trinity",
