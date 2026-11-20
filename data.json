@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-11-20",
+  "exportedAt": "2026-11-21",
   "tabs": [
     {
       "id": "films-du-mois",
@@ -457,6 +457,22 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-20T20:37:00Z"
+    },
+    {
+      "id": "arrival-mwplkfqj",
+      "title": "Arrival",
+      "kind": "film",
+      "year": 2016,
+      "by": "Denis Villeneuve",
+      "tab": "autre",
+      "section": null,
+      "note": null,
+      "order": 20,
+      "seen": false,
+      "seenAt": null,
+      "addedAt": "2026-11-20T23:15:24.715Z",
+      "updatedAt": "2026-11-20T23:15:24.715Z",
+      "addedBy": "ReoZ"
     }
   ]
 }
