@@ -473,6 +473,22 @@
       "addedAt": "2026-11-20T23:15:24.715Z",
       "updatedAt": "2026-11-20T23:15:24.715Z",
       "addedBy": "ReoZ"
+    },
+    {
+      "id": "buddy-mwplln2r",
+      "title": "Buddy",
+      "kind": "film",
+      "year": 2026,
+      "by": "Casper Kelly",
+      "tab": "autre",
+      "section": null,
+      "note": null,
+      "order": 30,
+      "seen": false,
+      "seenAt": null,
+      "addedAt": "2026-11-20T23:16:20.883Z",
+      "updatedAt": "2026-11-20T23:16:20.883Z",
+      "addedBy": "ReoZ"
     }
   ]
 }
