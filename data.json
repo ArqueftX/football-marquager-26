@@ -342,6 +342,20 @@
       "order": 110,
       "seen": false,
       "seenAt": null
+    },
+    {
+      "id": "carlitos-way",
+      "title": "Carlito's Way",
+      "kind": "film",
+      "year": 1993,
+      "by": "Brian De Palma",
+      "tab": "films-du-mois",
+      "section": null,
+      "note": "Film de novembre 2026 · L'Impasse en VF",
+      "order": 40,
+      "seen": false,
+      "seenAt": null,
+      "addedAt": "2026-11-20T20:12:00Z"
     }
   ]
 }
