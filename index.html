@@ -348,8 +348,8 @@ button { cursor: pointer; }
 <div class="overlay" id="gh-overlay" hidden>
   <form class="sheet" id="gh-form" role="dialog" aria-modal="true" aria-labelledby="gh-title" novalidate>
     <h2 id="gh-title">Modifier la liste</h2>
-    <p class="sheet-intro" id="gh-intro">Indique ton prénom et colle ton jeton GitHub pour cocher les visionnages, changer les dates et ajouter des titres. Ton prénom s'affichera sur ce que tu coches et ajoutes. Le jeton reste enregistré dans ce navigateur, nulle part ailleurs.</p>
-    <div class="field">
+    <p class="sheet-intro" id="gh-intro">Colle ton jeton GitHub pour cocher les visionnages, changer les dates et ajouter des titres. Ton prénom s'affichera sur ce que tu coches et ajoutes. Le jeton reste enregistré dans ce navigateur, nulle part ailleurs.</p>
+    <div class="field" id="gh-name-wrap">
       <label for="gh-name">Ton prénom</label>
       <input id="gh-name" type="text" autocomplete="given-name" maxlength="30" placeholder="Ex. Nolan">
     </div>
@@ -735,9 +735,28 @@ button { cursor: pointer; }
   var TOKEN_KEY = "wpf-gh-token";
   function getToken() { try { return localStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; } }
   function setToken(t) { try { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
+  // Chaque jeton est reconnu par son empreinte (16 premiers caractères du SHA-256 du jeton).
+  // L'empreinte ne permet pas de retrouver le jeton : on peut la publier sans risque.
+  // Pour ajouter quelqu'un : "empreinte": "Prénom".
+  var TOKEN_NAMES = {
+    "004ed91f541682b6": "ArqueftX"
+  };
+  var tokenFp = "";
+  function fingerprint(t) {
+    if (!t || !window.crypto || !crypto.subtle || typeof TextEncoder !== "function") return Promise.resolve("");
+    return crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) { return (b < 16 ? "0" : "") + b.toString(16); }).join("").slice(0, 16);
+    }).catch(function () { return ""; });
+  }
+  function tokenName() { return Object.prototype.hasOwnProperty.call(TOKEN_NAMES, tokenFp) ? TOKEN_NAMES[tokenFp] : ""; }
+
   var NAME_KEY = "wpf-name";
   function cleanName(n) { return String(n || "").replace(/\s+/g, " ").trim().slice(0, 30); }
-  function getName() { try { return cleanName(localStorage.getItem(NAME_KEY)); } catch (e) { return ""; } }
+  function getName() {
+    var t = tokenName();
+    if (t) return t;
+    try { return cleanName(localStorage.getItem(NAME_KEY)); } catch (e) { return ""; }
+  }
   function setName(n) { try { if (n) localStorage.setItem(NAME_KEY, n); else localStorage.removeItem(NAME_KEY); } catch (e) {} }
   // Prénom de la personne qui modifie. Sans prénom, on le demande avant d'enregistrer.
   function needName() {
@@ -819,7 +838,7 @@ button { cursor: pointer; }
   }
 
   function disconnectGh(msg) {
-    setToken("");
+    setToken(""); tokenFp = "";
     store = null; state.readOnly = true; state.mode = "static";
     state.editDate = null; state.confirmDel = null;
     render();
@@ -1010,10 +1029,12 @@ button { cursor: pointer; }
     $("gh-form").reset();
     $("gh-name").value = getName();
     $("gh-token-wrap").hidden = ghNameOnly;
+    $("gh-name-wrap").hidden = !ghNameOnly;
     $("gh-title").textContent = ghNameOnly ? "Ton prénom" : "Modifier la liste";
     $("gh-intro").textContent = ghNameOnly
-      ? "Il s'affichera sur ce que tu coches et ajoutes depuis ce navigateur."
-      : "Indique ton prénom et colle ton jeton GitHub pour cocher les visionnages, changer les dates et ajouter des titres. Ton prénom s'affichera sur ce que tu coches et ajoutes. Le jeton reste enregistré dans ce navigateur, nulle part ailleurs.";
+      ? "Ce jeton n'est encore associé à personne. Indique ton prénom : il s'affichera sur ce que tu coches et ajoutes." +
+        (tokenFp ? " Pour l'associer une fois pour toutes, donne ce code à Claude : " + tokenFp + "." : "")
+      : "Colle ton jeton GitHub pour cocher les visionnages, changer les dates et ajouter des titres. Le jeton reste enregistré dans ce navigateur, nulle part ailleurs.";
     $("gh-submit").textContent = ghNameOnly ? "Enregistrer" : "Se connecter";
     $("gh-error").hidden = true;
     $("gh-overlay").hidden = false;
@@ -1027,26 +1048,34 @@ button { cursor: pointer; }
     else openGh();
   });
   $("gh-cancel").addEventListener("click", closeGh);
-  $("gh-state").addEventListener("click", function () { openGh(true); });
+  $("gh-state").addEventListener("click", function () {
+    if (tokenName()) toast("Tu es connecté en tant que " + tokenName() + ", d'après ton jeton.");
+    else openGh(true);
+  });
   $("gh-overlay").addEventListener("click", function (e) { if (e.target === $("gh-overlay")) closeGh(); });
   $("gh-form").addEventListener("submit", function (e) {
     e.preventDefault();
-    var name = cleanName($("gh-name").value), err = $("gh-error");
-    if (!name) { err.textContent = "Indique ton prénom."; err.hidden = false; $("gh-name").focus(); return; }
+    var err = $("gh-error");
     if (ghNameOnly) {
+      var name = cleanName($("gh-name").value);
+      if (!name) { err.textContent = "Indique ton prénom."; err.hidden = false; $("gh-name").focus(); return; }
       setName(name); closeGh(); render();
       toast("C'est noté, " + name + ".");
       return;
     }
     var t = $("gh-token").value.trim();
     if (!t) { err.textContent = "Colle ton jeton dans le champ."; err.hidden = false; $("gh-token").focus(); return; }
-    setName(name);
     setToken(t);
     $("gh-submit").disabled = true;
-    ghLoad()
-      .then(function () { closeGh(); enterGhMode(); toast("Salut " + name + ", tu peux cocher, changer les dates et ajouter des titres."); })
+    fingerprint(t)
+      .then(function (fp) { tokenFp = fp; return ghLoad(); })
+      .then(function () {
+        closeGh(); enterGhMode();
+        if (tokenName()) toast("Salut " + tokenName() + ", tu peux cocher, changer les dates et ajouter des titres.");
+        else openGh(true);
+      })
       .catch(function (x) {
-        setToken("");
+        setToken(""); tokenFp = "";
         err.textContent = x.status === 401 ? "Jeton refusé. Vérifie que tu l'as copié en entier."
           : x.status === 404 ? "Ce jeton n'a pas accès au dépôt " + GH.repo + "."
           : "Connexion impossible. Vérifie ta connexion internet et réessaie.";
@@ -1071,7 +1100,7 @@ button { cursor: pointer; }
   function loadStatic() {
     if (typeof fetch !== "function" || location.protocol === "about:") { state.dbStatus = "none"; state.mode = "none"; render(); return; }
     if (getToken()) {
-      ghLoad().then(enterGhMode).catch(function (e) {
+      fingerprint(getToken()).then(function (fp) { tokenFp = fp; return ghLoad(); }).then(enterGhMode).catch(function (e) {
         if (e.status === 401) { setToken(""); toast("Ton jeton GitHub a expiré ou a été supprimé. Reconnecte-toi pour modifier."); }
         loadPublished();
       });
