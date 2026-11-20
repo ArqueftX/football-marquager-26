@@ -547,9 +547,8 @@ button { cursor: pointer; }
 
   function whoHTML(it) {
     var parts = [];
-    if (it.seen && it.together === true) parts.push('Vu ensemble' + (it.seenBy ? ' · coché par <b>' + esc(it.seenBy) + '</b>' : ''));
-    else if (it.seen && it.together === false) parts.push('Vu en solo' + (it.seenBy ? ' par <b>' + esc(it.seenBy) + '</b>' : ''));
-    else if (it.seen && it.seenBy) parts.push('Coché par <b>' + esc(it.seenBy) + '</b>');
+    // Vu ensemble : pas de nom. Vu en solo : on dit qui l'a vu.
+    if (it.seen && it.together === false) parts.push(it.seenBy ? 'Vu par <b>' + esc(it.seenBy) + '</b>' : 'Vu en solo');
     if (it.addedBy) parts.push('Ajouté par <b>' + esc(it.addedBy) + '</b>');
     return parts.length ? '<p class="who">' + parts.join(' · ') + '</p>' : '';
   }
@@ -663,8 +662,8 @@ button { cursor: pointer; }
           '<span class="tl-main"><strong>' + esc(it.title) + '</strong>' +
           (it.year ? '<span class="meta">' + esc(it.year) + '</span>' : '') +
           (t ? '<span class="chip">' + esc(t.name) + '</span>' : '') +
-          (it.together === true ? '<span class="tag-together">ensemble</span>' : it.together === false ? '<span class="who">en solo</span>' : '') +
-          (it.seenBy ? '<span class="who">' + (it.together ? 'coché ' : '') + 'par <b>' + esc(it.seenBy) + '</b></span>' : '') + '</span>' +
+          (it.together === true ? '<span class="tag-together">ensemble</span>'
+            : it.together === false ? '<span class="who">' + (it.seenBy ? 'vu par <b>' + esc(it.seenBy) + '</b>' : 'en solo') + '</span>' : '') + '</span>' +
           '<span class="tl-act">' + (state.readOnly || editing ? '' :
             '<button type="button" class="btn-edit" data-act="date-open" data-id="' + esc(it.id) + '" aria-label="Modifier la date de ' + esc(it.title) + '">' + PENCIL + '<span>Date</span></button>') + '</span>' +
           (editing ? dateEditorHTML(it) : '') +
