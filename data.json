@@ -20,12 +20,21 @@
       "sections": []
     },
     {
+      "id": "dceu",
+      "name": "DCEU",
+      "kicker": "Le Snyderverse",
+      "description": "L'ancien univers DC, de Man of Steel à Aquaman 2, dans l'ordre de sortie.",
+      "accent": "#8fa3b8",
+      "order": 3,
+      "sections": []
+    },
+    {
       "id": "the-batman",
       "name": "The Batman",
       "kicker": "The Batman Epic Crime Saga",
       "description": "Le Gotham de Matt Reeves, à part du DCU. La suite, The Batman Part II, est prévue en salles le 18 février 2028.",
       "accent": "#c9a227",
-      "order": 3,
+      "order": 4,
       "sections": []
     },
     {
@@ -34,7 +43,7 @@
       "kicker": "Le chantier Doomsday",
       "description": "Les films Marvel d'avant le MCU, à rattraper avant les grands crossovers.",
       "accent": "#e5484d",
-      "order": 4,
+      "order": 5,
       "sections": [
         {
           "id": "avant-deadpool-wolverine",
@@ -52,7 +61,7 @@
       "kicker": "En vrac",
       "description": "Tout ce qui n'a pas encore de groupe.",
       "accent": "#a59ac2",
-      "order": 5,
+      "order": 6,
       "sections": []
     }
   ],
@@ -377,13 +386,27 @@
       "kind": "film",
       "year": 2013,
       "by": "Zack Snyder",
-      "tab": "autre",
+      "tab": "dceu",
       "section": null,
-      "note": "Premier film du DCEU, avec Henry Cavill",
-      "order": 20,
+      "note": "Henry Cavill en Superman",
+      "order": 10,
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-20T20:16:00Z"
+    },
+    {
+      "id": "batman-v-superman",
+      "title": "Batman v Superman : L'Aube de la justice",
+      "kind": "film",
+      "year": 2016,
+      "by": "Zack Snyder",
+      "tab": "dceu",
+      "section": null,
+      "note": "Existe en version longue (Ultimate Edition, 3 h)",
+      "order": 20,
+      "seen": false,
+      "seenAt": null,
+      "addedAt": "2026-11-20T20:37:00Z"
     }
   ]
 }
