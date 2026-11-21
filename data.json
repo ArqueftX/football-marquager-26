@@ -605,6 +605,22 @@
       "addedAt": "2026-11-20T23:49:12.034Z",
       "updatedAt": "2026-11-20T23:49:12.034Z",
       "addedBy": "ArqueftX"
+    },
+    {
+      "id": "heredite",
+      "title": "Hérédité",
+      "vo": "Hereditary",
+      "kind": "film",
+      "year": 2018,
+      "by": "Ari Aster",
+      "tab": "autre",
+      "section": "horreur",
+      "note": null,
+      "order": 15,
+      "seen": false,
+      "seenAt": null,
+      "addedAt": "2026-11-21T20:56:25Z",
+      "updatedAt": "2026-11-21T20:56:25Z"
     }
   ]
 }
