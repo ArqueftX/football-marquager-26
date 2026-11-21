@@ -307,7 +307,8 @@
       "seenAt": "2026-09-27",
       "together": true,
       "updatedAt": "2026-11-20T21:10:49.895Z",
-      "seenBy": "ArqueftX"
+      "seenBy": "ArqueftX",
+      "vo": "Fantastic Four"
     },
     {
       "id": "4-fantastiques-surfer",
@@ -317,13 +318,14 @@
       "by": "Tim Story",
       "tab": "marvel-hors-mcu",
       "section": "avant-deadpool-wolverine",
-      "note": "Rise of the Silver Surfer",
+      "note": null,
       "order": 70,
       "seen": true,
       "seenAt": "2026-11-20",
       "seenBy": "ArqueftX",
       "updatedAt": "2026-11-20T21:03:10.623Z",
-      "together": true
+      "together": true,
+      "vo": "Fantastic Four: Rise of the Silver Surfer"
     },
     {
       "id": "daredevil-2003",
@@ -407,21 +409,25 @@
       "note": null,
       "order": 110,
       "seen": false,
-      "seenAt": null
+      "seenAt": null,
+      "vo": "Fantastic Four",
+      "updatedAt": null
     },
     {
       "id": "carlitos-way",
-      "title": "Carlito's Way",
+      "title": "L'Impasse",
       "kind": "film",
       "year": 1993,
       "by": "Brian De Palma",
       "tab": "films-du-mois",
       "section": null,
-      "note": "Film de novembre 2026 · L'Impasse en VF",
+      "note": "Film de novembre 2026",
       "order": 40,
       "seen": false,
       "seenAt": null,
-      "addedAt": "2026-11-20T20:12:00Z"
+      "addedAt": "2026-11-20T20:12:00Z",
+      "vo": "Carlito's Way",
+      "updatedAt": "2026-11-20T20:12:00Z"
     },
     {
       "id": "the-amazing-bulk",
@@ -465,23 +471,26 @@
       "order": 20,
       "seen": false,
       "seenAt": null,
-      "addedAt": "2026-11-20T20:37:00Z"
+      "addedAt": "2026-11-20T20:37:00Z",
+      "vo": "Batman v Superman: Dawn of Justice",
+      "updatedAt": "2026-11-20T20:37:00Z"
     },
     {
       "id": "arrival-mwplkfqj",
-      "title": "Arrival",
+      "title": "Premier Contact",
       "kind": "film",
       "year": 2016,
       "by": "Denis Villeneuve",
       "tab": "autre",
       "section": "divers",
-      "note": "Premier Contact en VF",
+      "note": null,
       "order": 110,
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-20T23:15:24.715Z",
       "updatedAt": "2026-11-20T23:15:24.715Z",
-      "addedBy": "ReoZ"
+      "addedBy": "ReoZ",
+      "vo": "Arrival"
     },
     {
       "id": "buddy-mwplln2r",
@@ -517,35 +526,37 @@
     },
     {
       "id": "cloudy-with-a-chance-of-meatballs-mwplnga2",
-      "title": "Cloudy with a Chance of Meatballs",
+      "title": "Tempête de boulettes géantes",
       "kind": "film",
       "year": 2009,
       "by": "Phil Lord & Christopher Miller",
       "tab": "autre",
       "section": "divers",
-      "note": "Tempête de boulettes géantes en VF",
+      "note": null,
       "order": 120,
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-20T23:17:45.386Z",
       "updatedAt": "2026-11-20T23:17:45.386Z",
-      "addedBy": "ReoZ"
+      "addedBy": "ReoZ",
+      "vo": "Cloudy with a Chance of Meatballs"
     },
     {
       "id": "cloudy-with-a-chance-of-meatballs-2-mwplo1n0",
-      "title": "Cloudy with a Chance of Meatballs 2",
+      "title": "L'Île des Miam-nimaux : Tempête de boulettes géantes 2",
       "kind": "film",
       "year": 2013,
       "by": "Cody Cameron & Kris Pearn",
       "tab": "autre",
       "section": "divers",
-      "note": "L'Île des Miam-nimaux : Tempête de boulettes géantes 2 en VF",
+      "note": null,
       "order": 130,
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-20T23:18:13.068Z",
       "updatedAt": "2026-11-20T23:18:13.068Z",
-      "addedBy": "ReoZ"
+      "addedBy": "ReoZ",
+      "vo": "Cloudy with a Chance of Meatballs 2"
     },
     {
       "id": "doctor-who-mwplo85o",

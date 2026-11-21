@@ -314,7 +314,11 @@ button { cursor: pointer; }
     <h2 id="add-title">Ajouter</h2>
     <div class="field">
       <label for="f-title">Titre</label>
-      <input id="f-title" name="title" type="text" autocomplete="off" required placeholder="Ex. Fruitvale Station">
+      <input id="f-title" name="title" type="text" autocomplete="off" required placeholder="Titre français, ex. L'Impasse">
+    </div>
+    <div class="field">
+      <label for="f-vo">Titre original, s'il est différent</label>
+      <input id="f-vo" name="vo" type="text" autocomplete="off" placeholder="Ex. Carlito's Way">
     </div>
     <div class="field">
       <label id="kind-label">Type</label>
@@ -545,6 +549,11 @@ button { cursor: pointer; }
     return '<button type="button" class="btn-seen" data-act="choose" data-id="' + esc(it.id) + '">Marquer vu</button>';
   }
 
+  // Titre original, affiché en petit quand le titre français est différent
+  function voHTML(it) {
+    return it.vo && String(it.vo).trim() !== String(it.title).trim() ? '<p class="note vo" lang="en">' + esc(it.vo) + '</p>' : '';
+  }
+
   function whoHTML(it) {
     var parts = [];
     // Vu ensemble : pas de nom. Vu en solo : on dit qui l'a vu.
@@ -578,6 +587,7 @@ button { cursor: pointer; }
       '<div class="body">' + (isNext ? '<span class="flag">Prochaine séance</span>' : '') +
       '<h4>' + esc(it.title) + '</h4>' +
       '<p class="meta">' + meta + '</p>' +
+      voHTML(it) +
       (it.note ? '<p class="note">' + esc(it.note) + '</p>' : '') +
       whoHTML(it) +
       '</div>' +
@@ -618,6 +628,7 @@ button { cursor: pointer; }
           '<button type="button" class="from" data-tab="' + esc(n.tab.id) + '">' + esc(n.tab.name) + (sec ? ' · ' + esc(sec.name) : '') + '</button>' +
           '<h3>' + esc(it.title) + '</h3>' +
           '<p class="meta">' + meta + '</p>' +
+          voHTML(it) +
           (it.note ? '<p class="note">' + esc(it.note) + '</p>' : '') +
           (state.readOnly ? '' : seenButtonHTML(it)) +
           '</article>';
@@ -1012,7 +1023,8 @@ button { cursor: pointer; }
     itemsOfTab(tabId).forEach(function (i) { maxOrder = Math.max(maxOrder, num(i.order, 0)); });
     var id = slug(title) + "-" + Date.now().toString(36);
     var doc = {
-      title: title, kind: kind, year: year, by: $("f-by").value.trim() || null,
+      title: title, vo: ($("f-vo").value.trim() && $("f-vo").value.trim() !== title) ? $("f-vo").value.trim() : null,
+      kind: kind, year: year, by: $("f-by").value.trim() || null,
       tab: tabId, section: section || null, note: $("f-note").value.trim() || null,
       order: maxOrder + 10, seen: false, seenAt: null, addedAt: nowIso(), updatedAt: nowIso(),
       addedBy: getName() || null
