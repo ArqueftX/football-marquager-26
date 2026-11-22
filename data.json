@@ -988,11 +988,13 @@
       "section": "horreur",
       "note": null,
       "order": 250,
-      "seen": false,
-      "seenAt": null,
+      "seen": true,
+      "seenAt": "2026-11-22",
       "addedAt": "2026-11-22T22:40:56.226Z",
-      "updatedAt": "2026-11-22T22:40:56.226Z",
-      "addedBy": "ReoZ"
+      "updatedAt": "2026-11-22T22:41:10.029Z",
+      "addedBy": "ReoZ",
+      "seenBy": "ReoZ",
+      "together": true
     }
   ]
 }
