@@ -1007,11 +1007,13 @@
       "section": "divers",
       "note": "Remake avec Ice Cube",
       "order": 260,
-      "seen": false,
-      "seenAt": null,
+      "seen": true,
+      "seenAt": "2026-11-25",
       "addedAt": "2026-11-25T22:42:36.765Z",
-      "updatedAt": "2026-11-25T22:42:36.765Z",
-      "addedBy": "ReoZ"
+      "updatedAt": "2026-11-25T22:42:46.731Z",
+      "addedBy": "ReoZ",
+      "seenBy": "ReoZ",
+      "together": true
     }
   ]
 }
