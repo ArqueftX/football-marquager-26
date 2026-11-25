@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-11-22",
+  "exportedAt": "2026-11-25",
   "tabs": [
     {
       "id": "films-du-mois",
@@ -995,6 +995,23 @@
       "addedBy": "ReoZ",
       "seenBy": "ReoZ",
       "together": true
+    },
+    {
+      "id": "la-guerre-des-mondes-mwwplil9",
+      "title": "La Guerre des mondes",
+      "vo": "War of the Worlds",
+      "kind": "film",
+      "year": 2025,
+      "by": "Rich Lee",
+      "tab": "autre",
+      "section": "divers",
+      "note": "Remake avec Ice Cube",
+      "order": 260,
+      "seen": false,
+      "seenAt": null,
+      "addedAt": "2026-11-25T22:42:36.765Z",
+      "updatedAt": "2026-11-25T22:42:36.765Z",
+      "addedBy": "ReoZ"
     }
   ]
 }
