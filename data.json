@@ -102,7 +102,8 @@
       "seenAt": "2026-08-24",
       "together": true,
       "updatedAt": "2026-11-20T21:09:24.709Z",
-      "seenBy": "ArqueftX"
+      "seenBy": "ArqueftX",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "zodiac",
@@ -118,7 +119,8 @@
       "seenAt": "2026-09-13",
       "together": true,
       "updatedAt": "2026-11-20T21:10:47.631Z",
-      "seenBy": "ArqueftX"
+      "seenBy": "ArqueftX",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "fruitvale-station",
@@ -131,7 +133,8 @@
       "note": "Film d'octobre 2026",
       "order": 30,
       "seen": false,
-      "seenAt": null
+      "seenAt": null,
+      "addedBy": "ArqueftX"
     },
     {
       "id": "peacemaker-s1",
@@ -147,7 +150,8 @@
       "seenAt": "2025-08-18",
       "together": true,
       "updatedAt": "2026-11-20T21:05:17.416Z",
-      "seenBy": "ArqueftX"
+      "seenBy": "ArqueftX",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "creature-commandos",
@@ -163,7 +167,8 @@
       "seenAt": "2025-08-20",
       "together": true,
       "updatedAt": "2026-11-20T21:05:23.874Z",
-      "seenBy": "ArqueftX"
+      "seenBy": "ArqueftX",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "superman-2025",
@@ -179,7 +184,8 @@
       "seenAt": "2025-08-24",
       "together": true,
       "updatedAt": "2026-11-20T21:09:09.841Z",
-      "seenBy": "ArqueftX"
+      "seenBy": "ArqueftX",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "peacemaker-s2",
@@ -195,7 +201,8 @@
       "seenAt": "2025-10-11",
       "together": true,
       "updatedAt": "2026-11-20T21:09:11.715Z",
-      "seenBy": "ArqueftX"
+      "seenBy": "ArqueftX",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "supergirl",
@@ -211,7 +218,8 @@
       "seenAt": "2026-10-03",
       "together": true,
       "updatedAt": "2026-11-20T21:10:52.211Z",
-      "seenBy": "ArqueftX"
+      "seenBy": "ArqueftX",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "lanterns-s1",
@@ -224,7 +232,8 @@
       "note": null,
       "order": 60,
       "seen": false,
-      "seenAt": null
+      "seenAt": null,
+      "addedBy": "ArqueftX"
     },
     {
       "id": "the-batman",
@@ -240,7 +249,8 @@
       "seenAt": "2025-10-25",
       "together": true,
       "updatedAt": "2026-11-20T21:09:20.329Z",
-      "seenBy": "ArqueftX"
+      "seenBy": "ArqueftX",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "the-penguin",
@@ -256,7 +266,8 @@
       "seenAt": "2026-02-22",
       "together": true,
       "updatedAt": "2026-11-20T21:09:22.797Z",
-      "seenBy": "ArqueftX"
+      "seenBy": "ArqueftX",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "blade",
@@ -272,7 +283,8 @@
       "seenAt": "2026-11-05",
       "updatedAt": "2026-11-20T21:10:54.395Z",
       "together": true,
-      "seenBy": "ArqueftX"
+      "seenBy": "ArqueftX",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "blade-2",
@@ -288,7 +300,8 @@
       "seenAt": "2026-11-05",
       "seenBy": "ArqueftX",
       "updatedAt": "2026-11-20T21:10:57.815Z",
-      "together": true
+      "together": true,
+      "addedBy": "ArqueftX"
     },
     {
       "id": "blade-trinity",
@@ -304,7 +317,8 @@
       "seenAt": "2026-11-15",
       "updatedAt": "2026-11-20T21:11:16.816Z",
       "together": true,
-      "seenBy": "ArqueftX"
+      "seenBy": "ArqueftX",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "4-fantastiques-2005",
@@ -321,7 +335,8 @@
       "together": true,
       "updatedAt": "2026-11-20T21:10:49.895Z",
       "seenBy": "ArqueftX",
-      "vo": "Fantastic Four"
+      "vo": "Fantastic Four",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "4-fantastiques-surfer",
@@ -338,7 +353,8 @@
       "seenBy": "ArqueftX",
       "updatedAt": "2026-11-20T21:03:10.623Z",
       "together": true,
-      "vo": "Fantastic Four: Rise of the Silver Surfer"
+      "vo": "Fantastic Four: Rise of the Silver Surfer",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "daredevil-2003",
@@ -354,7 +370,8 @@
       "seenAt": "2026-11-07",
       "updatedAt": "2026-11-20T21:11:05.973Z",
       "together": true,
-      "seenBy": "ArqueftX"
+      "seenBy": "ArqueftX",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "elektra",
@@ -370,7 +387,8 @@
       "seenAt": "2026-11-15",
       "updatedAt": "2026-11-20T21:11:26.968Z",
       "together": true,
-      "seenBy": "ArqueftX"
+      "seenBy": "ArqueftX",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "hulk-2003",
@@ -383,7 +401,8 @@
       "note": null,
       "order": 80,
       "seen": false,
-      "seenAt": null
+      "seenAt": null,
+      "addedBy": "ArqueftX"
     },
     {
       "id": "punisher-2004",
@@ -396,7 +415,8 @@
       "note": null,
       "order": 90,
       "seen": false,
-      "seenAt": null
+      "seenAt": null,
+      "addedBy": "ArqueftX"
     },
     {
       "id": "punisher-war-zone",
@@ -409,7 +429,8 @@
       "note": null,
       "order": 100,
       "seen": false,
-      "seenAt": null
+      "seenAt": null,
+      "addedBy": "ArqueftX"
     },
     {
       "id": "4-fantastiques-2015",
@@ -424,7 +445,8 @@
       "seen": false,
       "seenAt": null,
       "vo": "Fantastic Four",
-      "updatedAt": null
+      "updatedAt": null,
+      "addedBy": "ArqueftX"
     },
     {
       "id": "carlitos-way",
@@ -440,7 +462,8 @@
       "seenAt": null,
       "addedAt": "2026-11-20T20:12:00Z",
       "vo": "Carlito's Way",
-      "updatedAt": "2026-11-20T20:12:00Z"
+      "updatedAt": "2026-11-20T20:12:00Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "the-amazing-bulk",
@@ -455,7 +478,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-20T20:15:00Z",
-      "updatedAt": "2026-11-20T20:15:00Z"
+      "updatedAt": "2026-11-20T20:15:00Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "man-of-steel",
@@ -470,7 +494,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-20T20:16:00Z",
-      "updatedAt": "2026-11-20T20:15:55Z"
+      "updatedAt": "2026-11-20T20:15:55Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "batman-v-superman",
@@ -486,7 +511,8 @@
       "seenAt": null,
       "addedAt": "2026-11-20T20:37:00Z",
       "vo": "Batman v Superman: Dawn of Justice",
-      "updatedAt": "2026-11-20T20:37:00Z"
+      "updatedAt": "2026-11-20T20:37:00Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "arrival-mwplkfqj",
@@ -633,7 +659,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T20:56:25Z",
-      "updatedAt": "2026-11-21T20:56:25Z"
+      "updatedAt": "2026-11-21T20:56:25Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "suicide-squad-2016",
@@ -648,7 +675,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "wonder-woman-2017",
@@ -663,7 +691,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "aquaman-2018",
@@ -678,7 +707,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "shazam-2019",
@@ -693,7 +723,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "birds-of-prey",
@@ -709,7 +740,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "wonder-woman-1984",
@@ -724,7 +756,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "zack-snyders-justice-league",
@@ -739,7 +772,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "black-adam",
@@ -754,7 +788,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "shazam-2",
@@ -770,7 +805,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "the-flash-2023",
@@ -785,7 +821,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "aquaman-2",
@@ -801,7 +838,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "dune-2021",
@@ -816,7 +854,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "dune-2",
@@ -832,7 +871,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "sans-un-bruit-2",
@@ -848,7 +888,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "la-main",
@@ -864,7 +905,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "sans-un-bruit-jour-1",
@@ -880,7 +922,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "substitution-bring-her-back",
@@ -896,7 +939,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "les-indestructibles",
@@ -912,7 +956,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "la-haut",
@@ -928,7 +973,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "la-grande-aventure-lego",
@@ -944,7 +990,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "watchmen",
@@ -960,7 +1007,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "the-whale",
@@ -975,7 +1023,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-21T21:08:17Z",
-      "updatedAt": "2026-11-21T21:08:17Z"
+      "updatedAt": "2026-11-21T21:08:17Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "sans-un-bruit-mwsf7t0i",
@@ -1028,7 +1077,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-27T19:59:27Z",
-      "updatedAt": "2026-11-27T19:59:27Z"
+      "updatedAt": "2026-11-27T19:59:27Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "it-ends",
@@ -1043,7 +1093,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-27T19:59:27Z",
-      "updatedAt": "2026-11-27T19:59:27Z"
+      "updatedAt": "2026-11-27T19:59:27Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "carrie-2026",
@@ -1058,7 +1109,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-27T19:59:27Z",
-      "updatedAt": "2026-11-27T19:59:27Z"
+      "updatedAt": "2026-11-27T19:59:27Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "in-a-violent-nature",
@@ -1073,7 +1125,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-27T19:59:27Z",
-      "updatedAt": "2026-11-27T19:59:27Z"
+      "updatedAt": "2026-11-27T19:59:27Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "ice-cream-man-2026",
@@ -1088,7 +1141,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-27T19:59:27Z",
-      "updatedAt": "2026-11-27T19:59:27Z"
+      "updatedAt": "2026-11-27T19:59:27Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "crystal-lake",
@@ -1103,7 +1157,8 @@
       "seen": false,
       "seenAt": null,
       "addedAt": "2026-11-27T19:59:27Z",
-      "updatedAt": "2026-11-27T19:59:27Z"
+      "updatedAt": "2026-11-27T19:59:27Z",
+      "addedBy": "ArqueftX"
     },
     {
       "id": "carrie-1976",
